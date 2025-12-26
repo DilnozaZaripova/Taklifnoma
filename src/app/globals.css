@@ -1,61 +1,113 @@
 @import "tailwindcss";
 
 :root {
-  /* Wedding Pastel Palette */
-  --background: #FAFAFA;
-  --foreground: #333333;
+  /* =========================================
+     THE "VOGUE WEDDING" PALETTE
+     Luxurious, Warm, Expensive.
+  ========================================= */
+
+  /* Primary: Champagne Gold */
+  /* Used for: Buttons, Active States, Key Icons */
   --primary: #D4AF37;
-  /* Wedding Gold */
   --primary-foreground: #FFFFFF;
+
+  /* Secondary: Soft Lavender */
+  /* Used for: Subtle highlights, accents */
+  --secondary: #E6E6FA;
+  --secondary-foreground: #2D2D2D;
+
+  /* Backgrounds: Ivory & Cream */
+  /* Avoid pure white (#FFFFFF) for main backgrounds */
+  --background: #FDFCF8;
+  /* Ivory */
+  --card: #FAFAFA;
+  /* Soft Grey-White for depth */
+  --card-foreground: #2D2D2D;
+  --popover: #FAFAFA;
+  --popover-foreground: #2D2D2D;
+
+  /* Typography Colors */
+  /* Never use pure black (#000000) */
+  --foreground: #2D2D2D;
+  /* Charcoal */
   --muted: #F3F3F3;
   --muted-foreground: #666666;
-  --accent: #E6E6FA;
-  /* Lavender secondary */
+  /* Warm Grey */
+
+  /* Borders & Inputs */
   --border: #E8E8E8;
   --input: #E8E8E8;
   --ring: #D4AF37;
 
+  /* Measurements */
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  /* Vogue style */
   --radius-full: 9999px;
 
-  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
-  --shadow-luxury: 0 20px 40px rgba(0, 0, 0, 0.06);
+  /* Shadows (Soft & Spread) */
+  --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+  --shadow-luxury: 0 20px 40px -10px rgba(212, 175, 55, 0.15);
+  /* Gold tinted shadow */
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
+/* =========================================
+   TYPOGRAPHY
+========================================= */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
-  line-height: 1.6;
+  font-family: 'Inter', system-ui, sans-serif;
+  /* Clean Body */
+  line-height: 1.7;
+  /* Breathable */
+  letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
 h1,
+H1,
 h2,
+H2,
 h3,
-h4,
+H3,
 .font-serif {
-  font-family: var(--font-serif), serif;
+  font-family: 'Playfair Display', serif;
+  /* Luxurious Headings */
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
-/* Premium Utilities */
+/* =========================================
+   GLASSMORPHISM & UTILITIES
+========================================= */
+
+/* The Glass Effect */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-soft);
 }
 
+.glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: var(--shadow-soft);
+  @apply rounded-2xl transition-all duration-300;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-luxury);
+}
+
+/* High-End Borders */
 .premium-border {
   border: 1px solid var(--border);
   transition: all 0.3s ease;
@@ -63,57 +115,76 @@ h4,
 
 .premium-border:focus-within {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
 }
 
-/* LUXURY BUTTONS - CRITICAL */
+/* =========================================
+   COMPONENTS
+========================================= */
+
+/* Button Reset & Base */
+button {
+  cursor: pointer;
+}
+
+/* Luxury Button (Main CTA) */
 .btn-luxe {
-  background: #D4AF37;
+  background: var(--primary);
   color: white;
-  padding: 0.75rem 2rem;
+  padding: 1rem 2.5rem;
+  /* Larger padding */
   border-radius: 9999px;
-  font-weight: 700;
-  text-decoration: none;
-  display: inline-block;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-  text-align: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 20px -5px rgba(212, 175, 55, 0.4);
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-luxe:hover {
-  background: #B5952F;
-  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
-  transform: scale(1.05);
+  background: #C5A028;
+  /* Slightly darker gold */
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 0 15px 30px -5px rgba(212, 175, 55, 0.5);
 }
 
+.btn-luxe:active {
+  transform: scale(0.98);
+}
+
+/* Outline Button (Secondary) */
 .btn-outline-luxe {
-  border: 2px solid #D4AF37;
-  color: #D4AF37;
   background: transparent;
-  padding: 0.75rem 2rem;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  padding: 1rem 2.5rem;
   border-radius: 9999px;
-  font-weight: 700;
-  text-decoration: none;
-  display: inline-block;
+  font-weight: 600;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
-  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-outline-luxe:hover {
-  background: #D4AF37;
-  color: white;
-  transform: scale(1.05);
+  background: rgba(212, 175, 55, 0.05);
+  transform: scale(1.02);
 }
 
-/* Transitions */
+/* Page Transitions */
 .page-transition-enter {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(20px);
 }
 
 .page-transition-enter-active {
   opacity: 1;
   transform: translateY(0);
-  transition: opacity 500ms, transform 500ms;
+  transition: opacity 600ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }

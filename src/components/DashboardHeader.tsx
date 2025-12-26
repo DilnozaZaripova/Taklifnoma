@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button'; // Premium Button
+import { LogOut } from 'lucide-react';
 
 export default function DashboardHeader() {
     const [userName, setUserName] = useState('Azizbek');
@@ -18,10 +20,6 @@ export default function DashboardHeader() {
             } catch (e) {
                 console.error("Error parsing user from localStorage:", e);
             }
-        } else {
-            // If no user in localstorage, maybe session expired?
-            // For now, let's not force logout here to keep it simple, 
-            // but in a real app we'd redirect to /login.
         }
     }, []);
 
@@ -33,17 +31,27 @@ export default function DashboardHeader() {
     };
 
     return (
-        <header className="flex justify-between items-start md:items-end flex-col md:flex-row gap-4">
-            <div>
-                <h1 className="text-4xl font-serif">Xush Kelibsiz, <span className="premium-gradient font-bold">{userName}!</span></h1>
-                <p className="text-muted-foreground mt-2">To'y tayyorgarligini platformamiz bilan osonlashtiring.</p>
+        <header className="flex justify-between items-start md:items-end flex-col md:flex-row gap-6 pb-6 border-b border-[var(--border)]/50">
+            <div className="space-y-2">
+                <span className="text-sm font-medium tracking-widest text-[var(--primary)] uppercase">
+                    Boshqaruv Paneli
+                </span>
+                <h1 className="text-4xl md:text-5xl font-serif text-[var(--foreground)]">
+                    Xush Kelibsiz, <span className="text-[var(--primary)] italic">{userName}</span>
+                </h1>
+                <p className="text-[var(--muted-foreground)] max-w-md font-light">
+                    To'yga tayyorgarlik jarayonini nazorat qiling va unutilmas xotiralarni yarating.
+                </p>
             </div>
-            <button
+
+            <Button
                 onClick={handleLogout}
-                className="px-6 py-2 border border-red-200 text-red-500 rounded-xl hover:bg-red-50 transition-colors text-sm font-medium"
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-600 hover:bg-red-50"
             >
-                Tizimdan Chiqish
-            </button>
+                <LogOut className="mr-2" size={18} /> Tizimdan Chiqish
+            </Button>
         </header>
     );
 }

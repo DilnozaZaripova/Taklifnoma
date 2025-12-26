@@ -16,6 +16,7 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -28,6 +29,15 @@ app.use('/api/admin', adminRoutes);
 // Health Check
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', uptime: process.uptime() });
+});
+
+// Root Route (Welcome Message)
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: 'Taklifnoma API is running 🚀',
+        docs: '/api/docs',
+        serverTime: new Date().toISOString()
+    });
 });
 
 export default app;
