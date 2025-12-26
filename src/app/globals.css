@@ -1,0 +1,119 @@
+@import "tailwindcss";
+
+:root {
+  /* Wedding Pastel Palette */
+  --background: #FAFAFA;
+  --foreground: #333333;
+  --primary: #D4AF37;
+  /* Wedding Gold */
+  --primary-foreground: #FFFFFF;
+  --muted: #F3F3F3;
+  --muted-foreground: #666666;
+  --accent: #E6E6FA;
+  /* Lavender secondary */
+  --border: #E8E8E8;
+  --input: #E8E8E8;
+  --ring: #D4AF37;
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --shadow-luxury: 0 20px 40px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-serif {
+  font-family: var(--font-serif), serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* Premium Utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.premium-border {
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.premium-border:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.1);
+}
+
+/* LUXURY BUTTONS - CRITICAL */
+.btn-luxe {
+  background: #D4AF37;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+  text-align: center;
+}
+
+.btn-luxe:hover {
+  background: #B5952F;
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.4);
+  transform: scale(1.05);
+}
+
+.btn-outline-luxe {
+  border: 2px solid #D4AF37;
+  color: #D4AF37;
+  background: transparent;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.btn-outline-luxe:hover {
+  background: #D4AF37;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 500ms, transform 500ms;
+}

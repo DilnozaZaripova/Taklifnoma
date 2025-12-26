@@ -1,0 +1,48 @@
+{
+  "users": [
+    {
+      "id": "af19e36d-0bea-4de8-ad6b-c2a1ebc8feb0",
+      "fullName": "Test User",
+      "phone": "+998901234567",
+      "email": "test@test.com",
+      "password": "$2b$10$/MT5Z77YjUyBZircZ5BM/.6.pNa22GnqbC3rfUv4xqHpgP.u4Veeu",
+      "role": "USER",
+      "refreshTokens": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhZjE5ZTM2ZC0wYmVhLTRkZTgtYWQ2Yi1jMmExZWJjOGZlYjAiLCJpYXQiOjE3NjY0NzE3ODgsImV4cCI6MTc2NzA3NjU4OH0.8F_j1z-T4NIwQ0sEWIqHY8mcc0RtUhDjdYt60cn1PnU",
+      "createdAt": "2025-12-22T12:18:58.673Z"
+    },
+    {
+      "id": "9b32a190-f3c1-40f0-89d6-d2061732c3b4",
+      "fullName": "Nasridinov Rustamjon",
+      "phone": "+998911571400",
+      "email": "Rustamjon1400@gmail.com",
+      "password": "$2b$10$Om9A3Op0K8gQ8QJ4v9AVJ.GWmR7Bddwgj3tv.spGnITbC4N/QlFAO",
+      "role": "USER",
+      "refreshTokens": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI5YjMyYTE5MC1mM2MxLTQwZjAtODlkNi1kMjA2MTczMmMzYjQiLCJpYXQiOjE3NjY0NzEyODEsImV4cCI6MTc2NzA3NjA4MX0.iiLisePkXFoIoisldr_sciiSCZsoNImAfW-uuRXMhAQ",
+      "createdAt": "2025-12-23T06:27:54.815Z"
+    },
+    {
+      "id": "fbe734dc-bb6a-445e-84bf-16ec11e753d7",
+      "fullName": "Ali Valiyev",
+      "phone": "+998901111111",
+      "email": "test@test.comtest2@test.com",
+      "password": "$2b$10$ldENF1vJ0v3Lvr0CXnvSx.4UCh1gwH3HN.hh4Tt/wdVtyeDvgOZZ6",
+      "role": "USER",
+      "refreshTokens": null,
+      "createdAt": "2025-12-23T06:35:58.379Z"
+    },
+    {
+      "id": "001dc2f2-6886-425a-9503-60f48b007769",
+      "fullName": "Ali Valiyev",
+      "phone": "+998901111111",
+      "email": "test2@test.com",
+      "password": "$2b$10$cAdGLb1liHvk4xb6rpqwmuU7XbsAKNseexIgAakzM2iRIvOVnEHKO",
+      "role": "USER",
+      "refreshTokens": null,
+      "createdAt": "2025-12-23T08:42:19.990Z"
+    }
+  ],
+  "weddings": [],
+  "invitations": [],
+  "gifts": [],
+  "media": []
+}

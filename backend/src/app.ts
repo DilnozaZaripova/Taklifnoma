@@ -1,0 +1,33 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import authRoutes from './modules/auth/auth.routes';
+import weddingRoutes from './modules/weddings/weddings.routes';
+import aiRoutes from './modules/ai/ai.routes';
+import giftRoutes from './modules/gifts/gifts.routes';
+import mediaRoutes from './modules/media/media.routes';
+import adminRoutes from './modules/admin/admin.routes';
+
+const app = express();
+
+// Middlewares
+app.use(helmet());
+app.use(cors());
+app.use(morgan('dev'));
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/weddings', weddingRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/gifts', giftRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/admin', adminRoutes);
+
+// Health Check
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'OK', uptime: process.uptime() });
+});
+
+export default app;
