@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@lucia-auth/adapter-prisma": "^4.0.1",
-    "@prisma/client": "^7.2.0",
+    "@prisma/client": "^5.22.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -31,7 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
     "lucia": "^3.2.2",
-    "prisma": "^7.2.0",
+    "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
