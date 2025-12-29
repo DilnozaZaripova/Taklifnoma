@@ -113,7 +113,7 @@ export default function WeddingWizard() {
         const commonMotion = {
             initial: { rotateY: 90, opacity: 0 },
             animate: { rotateY: 0, opacity: 1 },
-            transition: { duration: 0.8, type: "spring" }
+            transition: { duration: 0.8, type: "spring" as const }
         };
 
         // Use either new keys or legacy mapping
