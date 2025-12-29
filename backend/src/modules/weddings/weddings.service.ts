@@ -1,49 +1,54 @@
-import db from '../../config/db';
-import { randomUUID } from 'crypto';
+import prisma from '../../config/db';
 
 export class WeddingsService {
     async create(userId: string, data: any) {
         const { groomName, brideName, weddingDate, weddingLocation, language, slug } = data;
-        const id = randomUUID();
 
-        const newWedding = {
-            id,
-            userId,
-            groomName,
-            brideName,
-            weddingDate: new Date(weddingDate).toISOString(),
-            weddingLocation,
-            language,
-            slug,
-            invitationStyle: 'classic',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-        };
-
-        await db.insert('weddings', newWedding);
+        const newWedding = await prisma.wedding.create({
+            data: {
+                userId,
+                groomName,
+                brideName,
+                weddingDate: new Date(weddingDate),
+                weddingLocation,
+                language,
+                slug,
+                invitationStyle: 'classic'
+            }
+        });
         return newWedding;
     }
 
     async getBySlug(slug: string) {
-        const wedding = await db.findOne('weddings', (w: any) => w.slug === slug);
-        if (wedding) {
-            // Mock includes for simplicity
-            wedding.invitations = [];
-            wedding.media = [];
-        }
+        const wedding = await prisma.wedding.findUnique({
+            where: { slug },
+            include: {
+                invitations: true,
+                media: true
+            }
+        });
         return wedding;
     }
 
     async getByUser(userId: string) {
-        const weddings = (await (db as any).load(), (db as any).data.weddings.filter((w: any) => w.userId === userId));
-        return weddings;
+        return prisma.wedding.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' }
+        });
     }
 
     async update(id: string, userId: string, data: any) {
-        await db.update('weddings', (w: any) => w.id === id && w.userId === userId, data);
+        // Need to ensure user owns the wedding or verify externally. 
+        // For now, simpler update:
+        await prisma.wedding.updateMany({
+            where: { id, userId }, // Acts as a security check
+            data: { ...data }
+        });
     }
 
     async delete(id: string, userId: string) {
-        // Implementation for deletion if needed
+        await prisma.wedding.deleteMany({
+            where: { id, userId }
+        });
     }
 }

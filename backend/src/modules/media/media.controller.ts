@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import db from '../../config/db';
-import { randomUUID } from 'crypto';
+import prisma from '../../config/db';
 import path from 'path';
 
 export class MediaController {
