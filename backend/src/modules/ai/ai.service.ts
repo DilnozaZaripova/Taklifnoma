@@ -96,13 +96,15 @@ export class AIService {
 
                 // Save to DB
                 const id = randomUUID();
-                await db.insert('invitations', {
-                    id,
-                    content: formattedText,
-                    meta: JSON.stringify(finalData),
-                    language: data.language,
-                    aiGenerated: true,
-                    createdAt: new Date().toISOString()
+                await db.invitation.create({
+                    data: {
+                        id, // We can still specify ID if we want, or let Prisma handle it. Keeping it to match return.
+                        content: formattedText,
+                        meta: JSON.stringify(finalData),
+                        language: data.language,
+                        aiGenerated: true
+                        // weddingId is optional now, so we can skip it
+                    }
                 });
 
                 return {

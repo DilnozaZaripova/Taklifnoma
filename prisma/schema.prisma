@@ -41,11 +41,12 @@ model Wedding {
 
 model Invitation {
   id           String   @id @default(cuid())
-  weddingId    String
+  weddingId    String?
   content      String
+  meta         String?  // Added for JSON storage of structured AI response
   language     String
   aiGenerated  Boolean  @default(true)
-  wedding      Wedding  @relation(fields: [weddingId], references: [id])
+  wedding      Wedding? @relation(fields: [weddingId], references: [id])
   createdAt    DateTime @default(now())
 }
 
