@@ -1,30 +1,24 @@
-import db from '../../config/db';
-import { randomUUID } from 'crypto';
+import prisma from '../../config/db';
 
 export class MediaService {
     async upload(weddingId: string, data: any) {
         const { fileUrl, type } = data;
-        const id = randomUUID();
 
-        const newMedia = {
-            id,
-            weddingId,
-            fileUrl,
-            type,
-            uploadedByGuest: true,
-            createdAt: new Date().toISOString()
-        };
-
-        await db.insert('media', newMedia);
+        const newMedia = await prisma.media.create({
+            data: {
+                weddingId,
+                fileUrl,
+                type,
+                uploadedByGuest: true
+            }
+        });
         return newMedia;
     }
 
     async getByWedding(weddingId: string) {
-        await (db as any).load();
-        const media = (db as any).data.media
-            .filter((m: any) => m.weddingId === weddingId)
-            .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-        return media;
+        return prisma.media.findMany({
+            where: { weddingId },
+            orderBy: { createdAt: 'desc' }
+        });
     }
 }

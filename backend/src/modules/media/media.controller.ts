@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import prisma from '../../config/db';
-import path from 'path';
 
 export class MediaController {
     async uploadMedia(req: Request, res: Response) {
@@ -10,27 +9,24 @@ export class MediaController {
                 return;
             }
 
-            const { weddingId } = req.body; // Multer parses body too
+            const { weddingId } = req.body;
 
             if (!weddingId) {
                 res.status(400).json({ success: false, message: "Wedding ID yetishmayapti" });
                 return;
             }
 
-            // Construct public URL (Assuming we serve 'uploads' statically)
-            // We need to add static file serving in app.ts
             const fileUrl = `/uploads/${req.file.filename}`;
+            const type = req.file.mimetype.startsWith('image/') ? 'IMAGE' : 'VIDEO';
 
-            const newMedia = {
-                id: randomUUID(),
-                weddingId,
-                fileUrl,
-                originalName: req.file.originalname,
-                mimeType: req.file.mimetype,
-                timestamp: new Date().toISOString()
-            };
-
-            await db.insert('media', newMedia);
+            const newMedia = await prisma.media.create({
+                data: {
+                    weddingId,
+                    fileUrl,
+                    type,
+                    uploadedByGuest: true
+                }
+            });
 
             res.status(201).json({ success: true, data: newMedia });
         } catch (error: any) {
@@ -42,8 +38,10 @@ export class MediaController {
     async getMediaByWedding(req: Request, res: Response) {
         try {
             const { weddingId } = req.params;
-            await db.load();
-            const media = (db.data.media || []).filter((m: any) => m.weddingId === weddingId);
+            const media = await prisma.media.findMany({
+                where: { weddingId },
+                orderBy: { createdAt: 'desc' }
+            });
             res.json({ success: true, data: media });
         } catch (error: any) {
             console.error('Media fetch error:', error);

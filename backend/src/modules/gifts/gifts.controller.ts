@@ -11,16 +11,14 @@ export class GiftsController {
                 return;
             }
 
-            const newGift = {
-                id: randomUUID(),
-                weddingId,
-                guestName,
-                amount,
-                message: message || '',
-                timestamp: new Date().toISOString()
-            };
-
-            await db.insert('gifts', newGift);
+            const newGift = await prisma.gift.create({
+                data: {
+                    weddingId,
+                    guestName,
+                    amount: parseFloat(amount),
+                    message: message || ''
+                }
+            });
 
             res.status(201).json({ success: true, data: newGift });
         } catch (error: any) {
@@ -32,13 +30,10 @@ export class GiftsController {
     async getGiftsByWedding(req: Request, res: Response) {
         try {
             const { weddingId } = req.params;
-            // JSONDb findOne implementation in db.ts is actually 'find' based on predicate? 
-            // Wait, db.ts only has findOne and insert and update. 
-            // I need to add a 'filter' method to db.ts or just read all and filter here for prototype.
-            // Let's rely on db.data access directly since it exposes it.
-
-            await db.load();
-            const gifts = (db.data.gifts || []).filter((g: any) => g.weddingId === weddingId);
+            const gifts = await prisma.gift.findMany({
+                where: { weddingId },
+                orderBy: { createdAt: 'desc' }
+            });
 
             res.json({ success: true, data: gifts });
         } catch (error: any) {
