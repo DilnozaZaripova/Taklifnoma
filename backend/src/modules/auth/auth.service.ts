@@ -1,33 +1,35 @@
 import bcrypt from 'bcrypt';
-import db from '../../config/db';
+import prisma from '../../config/db';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt';
-import { randomUUID } from 'crypto';
 
 export class AuthService {
     async register(data: any) {
         const { fullName, phone, email, password } = data;
         const hashedPassword = await bcrypt.hash(password, 10);
-        const id = randomUUID();
 
-        const newUser = {
-            id,
-            fullName,
-            phone,
-            email,
-            password: hashedPassword,
-            role: 'USER',
-            refreshTokens: null,
-            createdAt: new Date().toISOString()
-        };
+        const newUser = await prisma.user.create({
+            data: {
+                fullName,
+                phone,
+                email,
+                password: hashedPassword,
+                role: 'USER',
+                refreshTokens: null
+            }
+        });
 
-        await db.insert('users', newUser);
-        return { id, fullName, phone, email };
+        return { id: newUser.id, fullName: newUser.fullName, phone: newUser.phone, email: newUser.email };
     }
 
     async login(identifier: string, password: string) {
-        const user = await db.findOne('users', (u: any) =>
-            u.email === identifier || u.phone === identifier
-        );
+        const user = await prisma.user.findFirst({
+            where: {
+                OR: [
+                    { email: identifier },
+                    { phone: identifier }
+                ]
+            }
+        });
 
         if (!user || !user.password) {
             throw new Error('Foydalanuvchi topilmadi');
@@ -41,14 +43,25 @@ export class AuthService {
         const accessToken = generateAccessToken(user.id, user.role);
         const refreshToken = generateRefreshToken(user.id);
 
-        await db.update('users', (u: any) => u.id === user.id, { refreshTokens: refreshToken });
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { refreshTokens: refreshToken }
+        });
 
         return { user, accessToken, refreshToken };
     }
 
     async refreshToken(token: string) {
-        const decoded = verifyRefreshToken(token);
-        const user = await db.findOne('users', (u: any) => u.id === decoded.userId);
+        let decoded;
+        try {
+            decoded = verifyRefreshToken(token);
+        } catch (e) {
+            throw new Error('Refresh token yaroqsiz');
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.userId }
+        });
 
         if (!user || user.refreshTokens !== token) {
             throw new Error('Refresh token yaroqsiz');
