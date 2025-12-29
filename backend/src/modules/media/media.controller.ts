@@ -4,7 +4,7 @@ import prisma from '../../config/db';
 export class MediaController {
     async uploadMedia(req: Request, res: Response) {
         try {
-            if (!req.file) {
+            if (!(req as any).file) {
                 res.status(400).json({ success: false, message: "Fayl yuklanmadi" });
                 return;
             }
@@ -16,8 +16,9 @@ export class MediaController {
                 return;
             }
 
-            const fileUrl = `/uploads/${req.file.filename}`;
-            const type = req.file.mimetype.startsWith('image/') ? 'IMAGE' : 'VIDEO';
+            const file = (req as any).file;
+            const fileUrl = `/uploads/${file.filename}`;
+            const type = file.mimetype.startsWith('image/') ? 'IMAGE' : 'VIDEO';
 
             const newMedia = await prisma.media.create({
                 data: {
