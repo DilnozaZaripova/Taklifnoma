@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import DashboardHeader from '@/components/DashboardHeader';
 import WeddingWizard from '@/components/WeddingWizard';
+import Onboarding from '@/components/Onboarding';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import { Calendar, Users, Gift, Sparkles } from 'lucide-react';
@@ -16,6 +17,7 @@ export default function DashboardPage() {
         totalInvitations: 0
     });
     const [loading, setLoading] = useState(true);
+    const [showOnboarding, setShowOnboarding] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -49,10 +51,35 @@ export default function DashboardPage() {
         };
 
         fetchStats();
+        checkOnboarding();
     }, []);
+
+    const checkOnboarding = async () => {
+        const completed = localStorage.getItem('onboardingCompleted');
+        if (!completed) {
+            setShowOnboarding(true);
+        }
+    };
+
+    const handleOnboardingComplete = () => {
+        localStorage.setItem('onboardingCompleted', 'true');
+        setShowOnboarding(false);
+    };
+
+    const handleOnboardingSkip = () => {
+        localStorage.setItem('onboardingCompleted', 'true');
+        setShowOnboarding(false);
+    };
 
     return (
         <main className="min-h-screen bg-[var(--background)] px-4 sm:px-6 lg:px-8 py-12">
+            {showOnboarding && (
+                <Onboarding
+                    onComplete={handleOnboardingComplete}
+                    onSkip={handleOnboardingSkip}
+                />
+            )}
+
             <div className="max-w-7xl mx-auto space-y-12">
 
                 <DashboardHeader />

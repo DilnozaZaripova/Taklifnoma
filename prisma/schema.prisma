@@ -19,6 +19,7 @@ model User {
   verificationCode   String?
   passwordResetCode  String?
   passwordResetExpiry DateTime?
+  onboardingCompleted Boolean   @default(false)
   weddings           Wedding[]
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
