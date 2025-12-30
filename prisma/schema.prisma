@@ -139,3 +139,16 @@ model TableGuest {
   table      Table    @relation(fields: [tableId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 }
+
+model Guest {
+  id           String   @id @default(cuid())
+  weddingId    String
+  name         String
+  phone        String?
+  email        String?
+  linkToken    String   @unique
+  invitationId String?
+  hasViewed    Boolean  @default(false)
+  viewedAt     DateTime?
+  createdAt    DateTime @default(now())
+}

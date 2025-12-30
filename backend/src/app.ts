@@ -13,6 +13,7 @@ import rsvpRoutes from './modules/rsvp/rsvp.routes';
 import notificationRoutes from './modules/notifications/notifications.routes';
 import activityRoutes from './modules/activity/activity.routes';
 import tableRoutes from './modules/tables/tables.routes';
+import guestRoutes from './modules/guests/guests.routes';
 
 const app = express();
 
@@ -35,6 +36,7 @@ app.use('/api/rsvp', rsvpRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/activity', activityRoutes);
 app.use('/api/tables', tableRoutes);
+app.use('/api/guests', guestRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
