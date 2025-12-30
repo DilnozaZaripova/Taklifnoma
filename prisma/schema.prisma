@@ -109,3 +109,13 @@ model Notification {
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 }
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String
+  weddingId   String?
+  activityType String  // RSVP_SUBMITTED, GIFT_RECEIVED, MEDIA_UPLOADED, INVITATION_CREATED
+  description String
+  metadata    String?  // JSON for additional data
+  createdAt   DateTime @default(now())
+}

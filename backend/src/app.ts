@@ -11,6 +11,7 @@ import adminRoutes from './modules/admin/admin.routes';
 import userRoutes from './modules/user/user.routes';
 import rsvpRoutes from './modules/rsvp/rsvp.routes';
 import notificationRoutes from './modules/notifications/notifications.routes';
+import activityRoutes from './modules/activity/activity.routes';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/rsvp', rsvpRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/activity', activityRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
