@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter, Great_Vibes, Cinzel, Bodoni_Moda, Lato } from "next/font/google";
 import "./globals.css";
+import Header from "@/components/Header";
 
 const playfair = Playfair_Display({
   variable: "--font-serif",
@@ -49,6 +50,7 @@ export default function RootLayout({
       <body
         className={`${playfair.variable} ${inter.variable} ${greatVibes.variable} ${cinzel.variable} ${bodoni.variable} ${lato.variable} antialiased`}
       >
+        <Header />
         {children}
       </body>
     </html>
