@@ -6,9 +6,12 @@
     "dev": "next dev",
     "dev:backend": "cd backend && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:backend\"",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:deploy": "npx prisma migrate deploy",
+    "db:reset": "npx prisma migrate reset --force",
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -28,6 +31,7 @@
     "multer": "^2.0.2",
     "next": "16.1.0",
     "nodemailer": "^7.0.12",
+    "prisma": "^5.22.0",
     "qrcode.react": "^4.2.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
@@ -55,8 +59,6 @@
     "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.0",
-    "lucia": "^3.2.2",
-    "prisma": "^5.22.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
