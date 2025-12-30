@@ -8,17 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  fullName      String?
-  phone         String?   @unique
-  email         String?   @unique
-  password      String?
-  role          String    @default("USER")
-  refreshTokens String?
-  weddings      Wedding[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
+  id               String    @id @default(cuid())
+  fullName         String?
+  phone            String?   @unique
+  email            String?   @unique
+  password         String?
+  role             String    @default("USER")
+  refreshTokens    String?
+  isVerified       Boolean   @default(false)
+  verificationCode String?
+  weddings         Wedding[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  sessions         Session[]
 }
 
 model Session {
@@ -51,9 +53,10 @@ model Invitation {
   id           String   @id @default(cuid())
   weddingId    String?
   content      String
-  meta         String?  // Added for JSON storage of structured AI response
+  meta         String?  // JSON storage of structured AI response
   language     String
   aiGenerated  Boolean  @default(true)
+  status       String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
   wedding      Wedding? @relation(fields: [weddingId], references: [id])
   createdAt    DateTime @default(now())
 }

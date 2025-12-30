@@ -8,6 +8,7 @@ import aiRoutes from './modules/ai/ai.routes';
 import giftRoutes from './modules/gifts/gifts.routes';
 import mediaRoutes from './modules/media/media.routes';
 import adminRoutes from './modules/admin/admin.routes';
+import userRoutes from './modules/user/user.routes';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/gifts', giftRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/user', userRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
