@@ -25,7 +25,7 @@ export default function ActivityFeed({ limit = 10 }: { limit?: number }) {
         if (!token) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/activity', {
+            const response = await fetch('/api/activity', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 

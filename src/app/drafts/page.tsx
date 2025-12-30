@@ -32,7 +32,7 @@ export default function DraftsPage() {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/invitations/drafts', {
+            const response = await fetch('/api/invitations/drafts', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -54,7 +54,7 @@ export default function DraftsPage() {
 
         const token = localStorage.getItem('accessToken');
         try {
-            await fetch(`http://localhost:5000/api/invitations/${id}`, {
+            await fetch(`/api/invitations/${id}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

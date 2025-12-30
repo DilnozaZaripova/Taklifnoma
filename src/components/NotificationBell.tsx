@@ -43,7 +43,7 @@ export default function NotificationBell() {
         if (!token) return;
 
         try {
-            const response = await fetch('http://localhost:5000/api/notifications/unread-count', {
+            const response = await fetch('/api/notifications/unread-count', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -64,7 +64,7 @@ export default function NotificationBell() {
 
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:5000/api/notifications', {
+            const response = await fetch('/api/notifications', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
@@ -93,7 +93,7 @@ export default function NotificationBell() {
         if (!token) return;
 
         try {
-            await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+            await fetch(`/api/notifications/${id}/read`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

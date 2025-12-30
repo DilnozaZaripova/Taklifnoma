@@ -28,7 +28,7 @@ export default function DashboardPage() {
                     return;
                 }
 
-                const response = await fetch('http://localhost:5000/api/user/stats', {
+                const response = await fetch('/api/user/stats', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

@@ -45,7 +45,7 @@ export default function WeddingWizard() {
                 return;
             }
 
-            const response = await fetch('http://localhost:5000/api/ai/generate-invitation', {
+            const response = await fetch('/api/ai/generate-invitation', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

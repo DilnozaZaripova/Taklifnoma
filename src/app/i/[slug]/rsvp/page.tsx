@@ -32,7 +32,7 @@ export default function RSVPPage() {
 
         try {
             // First get wedding ID from slug
-            const weddingResponse = await fetch(`http://localhost:5000/api/weddings/${weddingSlug}`);
+            const weddingResponse = await fetch(`/api/weddings/${weddingSlug}`);
             const weddingData = await weddingResponse.json();
 
             if (!weddingData.success) {
@@ -44,7 +44,7 @@ export default function RSVPPage() {
             const weddingId = weddingData.data.id;
 
             // Submit RSVP
-            const response = await fetch('http://localhost:5000/api/rsvp', {
+            const response = await fetch('/api/rsvp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -154,8 +154,8 @@ export default function RSVPPage() {
                                     type="button"
                                     onClick={() => setFormData({ ...formData, status: 'ATTENDING' })}
                                     className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${formData.status === 'ATTENDING'
-                                            ? 'border-green-500 bg-green-50'
-                                            : 'border-[var(--border)] hover:border-green-300'
+                                        ? 'border-green-500 bg-green-50'
+                                        : 'border-[var(--border)] hover:border-green-300'
                                         }`}
                                 >
                                     <CheckCircle2 className={formData.status === 'ATTENDING' ? 'text-green-600' : 'text-gray-400'} size={24} />
@@ -165,8 +165,8 @@ export default function RSVPPage() {
                                     type="button"
                                     onClick={() => setFormData({ ...formData, status: 'NOT_ATTENDING' })}
                                     className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${formData.status === 'NOT_ATTENDING'
-                                            ? 'border-red-500 bg-red-50'
-                                            : 'border-[var(--border)] hover:border-red-300'
+                                        ? 'border-red-500 bg-red-50'
+                                        : 'border-[var(--border)] hover:border-red-300'
                                         }`}
                                 >
                                     <XCircle className={formData.status === 'NOT_ATTENDING' ? 'text-red-600' : 'text-gray-400'} size={24} />
@@ -176,8 +176,8 @@ export default function RSVPPage() {
                                     type="button"
                                     onClick={() => setFormData({ ...formData, status: 'MAYBE' })}
                                     className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${formData.status === 'MAYBE'
-                                            ? 'border-yellow-500 bg-yellow-50'
-                                            : 'border-[var(--border)] hover:border-yellow-300'
+                                        ? 'border-yellow-500 bg-yellow-50'
+                                        : 'border-[var(--border)] hover:border-yellow-300'
                                         }`}
                                 >
                                     <HelpCircle className={formData.status === 'MAYBE' ? 'text-yellow-600' : 'text-gray-400'} size={24} />
