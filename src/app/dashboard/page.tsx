@@ -10,23 +10,45 @@ import { Calendar, Users, Gift, Sparkles } from 'lucide-react';
 
 export default function DashboardPage() {
     const [stats, setStats] = useState({
-        daysLeft: 0,
-        rsvpCount: 0,
-        totalGifts: 0
+        weddingCount: 0,
+        acceptedRSVPs: 0,
+        totalGiftAmount: 0,
+        totalInvitations: 0
     });
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Mock calculation for 'Days Left'
-        const weddingDate = new Date('2025-05-20');
-        const today = new Date();
-        const diffTime = weddingDate.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const fetchStats = async () => {
+            try {
+                const token = localStorage.getItem('accessToken');
+                if (!token) {
+                    window.location.href = '/login';
+                    return;
+                }
 
-        setStats({
-            daysLeft: diffDays > 0 ? diffDays : 0,
-            rsvpCount: 12, // Mock data
-            totalGifts: 0
-        });
+                const response = await fetch('http://localhost:5000/api/user/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    setStats(data.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch stats:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchStats();
     }, []);
 
     return (

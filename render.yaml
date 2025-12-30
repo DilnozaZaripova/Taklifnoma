@@ -1,0 +1,41 @@
+services:
+  # Backend API Service
+  - type: web
+    name: taklifnoma-backend
+    env: node
+    region: frankfurt
+    buildCommand: cd backend && npm install && npx prisma generate && npm run build
+    startCommand: cd backend && npx prisma migrate deploy && npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+
+  # PostgreSQL Database
+  - type: pserv
+    name: taklifnoma-db
+    env: docker
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: POSTGRES_USER
+        value: taklifnoma
+      - key: POSTGRES_DB
+        value: taklifnoma

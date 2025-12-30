@@ -1,35 +1,43 @@
-# Stage 1: Build
-FROM node:20-alpine AS builder
+# Production Dockerfile for Backend
+FROM node:18-alpine AS builder
 
 WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm install
+RUN npm ci --production=false
 
-# Copy source code and build
+# Copy source code
 COPY . .
+
+# Generate Prisma Client
 RUN npx prisma generate
+
+# Build TypeScript
 RUN npm run build
 
-# Stage 2: Run
-FROM node:20-alpine
+# Production stage
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Install production dependencies only
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm install --omit=dev
-
-# Copy build artifacts and prisma client
+# Copy built files and dependencies
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/prisma ./prisma
 
-# Environment setup
+# Set production environment
 ENV NODE_ENV=production
+
+# Expose port
 EXPOSE 5000
 
-# Start the server
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s \
+    CMD node -e "require('http').get('http://localhost:5000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"
+
+# Start command
 CMD ["npm", "start"]
