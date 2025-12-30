@@ -20,6 +20,7 @@ model User {
   passwordResetCode  String?
   passwordResetExpiry DateTime?
   onboardingCompleted Boolean   @default(false)
+  subscriptionTier   String    @default("FREE") // FREE, PREMIUM, ENTERPRISE
   weddings           Wedding[]
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
