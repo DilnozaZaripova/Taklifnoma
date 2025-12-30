@@ -15,12 +15,14 @@ model User {
   password         String?
   role             String    @default("USER")
   refreshTokens    String?
-  isVerified       Boolean   @default(false)
-  verificationCode String?
-  weddings         Wedding[]
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-  sessions         Session[]
+  isVerified         Boolean   @default(false)
+  verificationCode   String?
+  passwordResetCode  String?
+  passwordResetExpiry DateTime?
+  weddings           Wedding[]
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  sessions           Session[]
 }
 
 model Session {

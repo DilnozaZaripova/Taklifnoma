@@ -155,4 +155,65 @@ export class AuthService {
         const accessToken = generateAccessToken(user.id, user.role);
         return { accessToken };
     }
+
+    async requestPasswordReset(email: string) {
+        const user = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (!user) {
+            throw new Error('Foydalanuvchi topilmadi');
+        }
+
+        const resetCode = this.generateVerificationCode();
+        const resetExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                passwordResetCode: resetCode,
+                passwordResetExpiry: resetExpiry
+            }
+        });
+
+        // Send reset code via email
+        await emailService.sendPasswordResetCode(email, resetCode, user.fullName || 'Foydalanuvchi');
+
+        return { success: true, message: 'Parolni tiklash kodi emailga yuborildi' };
+    }
+
+    async resetPassword(email: string, code: string, newPassword: string) {
+        const user = await prisma.user.findFirst({
+            where: { email }
+        });
+
+        if (!user) {
+            throw new Error('Foydalanuvchi topilmadi');
+        }
+
+        if (!user.passwordResetCode || !user.passwordResetExpiry) {
+            throw new Error('Parolni tiklash kodi topilmadi');
+        }
+
+        if (user.passwordResetCode !== code) {
+            throw new Error('Noto\'g\'ri kod');
+        }
+
+        if (new Date() > user.passwordResetExpiry) {
+            throw new Error('Kod muddati tugagan. Qaytadan so\'rang');
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                password: hashedPassword,
+                passwordResetCode: null,
+                passwordResetExpiry: null
+            }
+        });
+
+        return { success: true, message: 'Parol muvaffaqiyatli tiklandi' };
+    }
 }
