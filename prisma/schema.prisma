@@ -99,3 +99,13 @@ model Media {
   wedding          Wedding  @relation(fields: [weddingId], references: [id])
   createdAt        DateTime @default(now())
 }
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   // RSVP, GIFT, MEDIA, SYSTEM
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}

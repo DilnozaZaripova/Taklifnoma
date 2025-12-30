@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Settings, LogOut, Menu, X } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 interface UserData {
     id: string;
@@ -94,61 +95,64 @@ export default function Header() {
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-4">
                         {user ? (
-                            <div className="relative" ref={dropdownRef}>
-                                <button
-                                    onClick={() => setShowDropdown(!showDropdown)}
-                                    className="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-[var(--muted)] transition-colors"
-                                >
-                                    <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-white font-semibold">
-                                        {getInitials(user.fullName)}
-                                    </div>
-                                    <div className="text-left hidden lg:block">
-                                        <p className="text-sm font-medium text-[var(--foreground)]">
-                                            {user.fullName || 'User'}
-                                        </p>
-                                        <p className="text-xs text-[var(--muted-foreground)]">
-                                            {user.email}
-                                        </p>
-                                    </div>
-                                </button>
+                            <>
+                                <NotificationBell />
+                                <div className="relative" ref={dropdownRef}>
+                                    <button
+                                        onClick={() => setShowDropdown(!showDropdown)}
+                                        className="flex items-center gap-3 px-4 py-2 rounded-full hover:bg-[var(--muted)] transition-colors"
+                                    >
+                                        <div className="w-10 h-10 bg-gradient-primary rounded-full flex items-center justify-center text-white font-semibold">
+                                            {getInitials(user.fullName)}
+                                        </div>
+                                        <div className="text-left hidden lg:block">
+                                            <p className="text-sm font-medium text-[var(--foreground)]">
+                                                {user.fullName || 'User'}
+                                            </p>
+                                            <p className="text-xs text-[var(--muted-foreground)]">
+                                                {user.email}
+                                            </p>
+                                        </div>
+                                    </button>
 
-                                <AnimatePresence>
-                                    {showDropdown && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg border border-[var(--border)] overflow-hidden"
-                                        >
-                                            <Link
-                                                href="/dashboard"
-                                                className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--muted)] transition-colors"
-                                                onClick={() => setShowDropdown(false)}
+                                    <AnimatePresence>
+                                        {showDropdown && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 10 }}
+                                                transition={{ duration: 0.2 }}
+                                                className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg border border-[var(--border)] overflow-hidden"
                                             >
-                                                <User size={18} className="text-[var(--primary)]" />
-                                                <span className="text-sm font-medium">Dashboard</span>
-                                            </Link>
-                                            <Link
-                                                href="/settings"
-                                                className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--muted)] transition-colors"
-                                                onClick={() => setShowDropdown(false)}
-                                            >
-                                                <Settings size={18} className="text-[var(--primary)]" />
-                                                <span className="text-sm font-medium">Sozlamalar</span>
-                                            </Link>
-                                            <div className="border-t border-[var(--border)]"></div>
-                                            <button
-                                                onClick={handleLogout}
-                                                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
-                                            >
-                                                <LogOut size={18} />
-                                                <span className="text-sm font-medium">Chiqish</span>
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                                                <Link
+                                                    href="/dashboard"
+                                                    className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--muted)] transition-colors"
+                                                    onClick={() => setShowDropdown(false)}
+                                                >
+                                                    <User size={18} className="text-[var(--primary)]" />
+                                                    <span className="text-sm font-medium">Dashboard</span>
+                                                </Link>
+                                                <Link
+                                                    href="/settings"
+                                                    className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--muted)] transition-colors"
+                                                    onClick={() => setShowDropdown(false)}
+                                                >
+                                                    <Settings size={18} className="text-[var(--primary)]" />
+                                                    <span className="text-sm font-medium">Sozlamalar</span>
+                                                </Link>
+                                                <div className="border-t border-[var(--border)]"></div>
+                                                <button
+                                                    onClick={handleLogout}
+                                                    className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors text-red-600"
+                                                >
+                                                    <LogOut size={18} />
+                                                    <span className="text-sm font-medium">Chiqish</span>
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            </>
                         ) : (
                             <div className="flex items-center gap-3">
                                 <Link

@@ -10,6 +10,7 @@ import mediaRoutes from './modules/media/media.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import userRoutes from './modules/user/user.routes';
 import rsvpRoutes from './modules/rsvp/rsvp.routes';
+import notificationRoutes from './modules/notifications/notifications.routes';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use('/api/media', mediaRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/rsvp', rsvpRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
