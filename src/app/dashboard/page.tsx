@@ -66,21 +66,21 @@ export default function DashboardPage() {
                 >
                     <StatCard
                         icon={<Calendar className="text-[var(--primary)]" size={28} />}
-                        label="Kunlar Qoldi"
-                        value={stats.daysLeft}
-                        subValue="20 May, 2025"
+                        label="To'ylaringiz"
+                        value={loading ? '...' : stats.weddingCount.toString()}
+                        subValue="Yaratilgan"
                     />
                     <StatCard
                         icon={<Users className="text-[var(--primary)]" size={28} />}
-                        label="Tasdiqlaganlar (RSVP)"
-                        value={stats.rsvpCount}
-                        subValue="Jami 200 mehmon"
+                        label="Qabul qilingan"
+                        value={loading ? '...' : stats.acceptedRSVPs.toString()}
+                        subValue={`${stats.totalInvitations} taklif yuborilgan`}
                     />
                     <StatCard
                         icon={<Gift className="text-[var(--primary)]" size={28} />}
-                        label="Yig'ilgan To'yana"
-                        value={`${stats.totalGifts}`}
-                        subValue="so'm" // Label for currency
+                        label="To'plangan Mablag'"
+                        value={loading ? '...' : `${(stats.totalGiftAmount / 1000).toFixed(0)}K`}
+                        subValue="UZS"
                     />
                 </motion.div>
 

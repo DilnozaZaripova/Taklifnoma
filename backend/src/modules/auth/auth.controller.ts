@@ -37,7 +37,7 @@ export class AuthController {
         try {
             const { email, code } = req.body;
             const result = await authService.verifyEmail(email, code);
-            res.status(200).json({ success: true, ...result });
+            res.status(200).json(result);
         } catch (error: any) {
             res.status(400).json({ success: false, message: error.message });
         }
