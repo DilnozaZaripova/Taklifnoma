@@ -11,7 +11,7 @@
     "lint": "eslint",
     "db:deploy": "npx prisma migrate deploy",
     "db:reset": "npx prisma migrate reset --force",
-    "postinstall": "npx prisma generate && npx prisma migrate deploy"
+    "postinstall": "npx prisma generate && npx prisma db push"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
