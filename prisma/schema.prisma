@@ -47,8 +47,23 @@ model Wedding {
   invitations       Invitation[]
   gifts             Gift[]
   media             Media[]
+  rsvps             RSVP[]
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
+}
+
+model RSVP {
+  id            String   @id @default(cuid())
+  weddingId     String
+  guestName     String
+  guestPhone    String?
+  guestEmail    String?
+  status        String   // ATTENDING, NOT_ATTENDING, MAYBE
+  attendeeCount Int      @default(1)
+  message       String?
+  wedding       Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Invitation {

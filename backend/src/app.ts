@@ -9,6 +9,7 @@ import giftRoutes from './modules/gifts/gifts.routes';
 import mediaRoutes from './modules/media/media.routes';
 import adminRoutes from './modules/admin/admin.routes';
 import userRoutes from './modules/user/user.routes';
+import rsvpRoutes from './modules/rsvp/rsvp.routes';
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/gifts', giftRoutes);
 app.use('/api/media', mediaRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/rsvp', rsvpRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
