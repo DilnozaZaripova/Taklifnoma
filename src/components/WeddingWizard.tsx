@@ -8,6 +8,7 @@ import Card from '@/components/ui/Card';
 import { ChevronLeft, ChevronRight, Sparkles, AlertCircle, Wand2, Quote, Palette, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { QRCodeSVG } from 'qrcode.react';
+import ShareModal from './ShareModal';
 
 type Theme = 'royal-gold' | 'modern-minimalist' | 'national-heritage';
 
@@ -238,11 +239,26 @@ export default function WeddingWizard() {
     };
 
 
+    // ... (existing helper functions)
+
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
     return (
         <Card glass className="max-w-5xl mx-auto p-4 md:p-12 relative overflow-hidden min-h-[500px]">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
+            {/* Share Modal Integration */}
+            {result && (
+                <ShareModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                    slug={result.slug || 'demo-slug'} // Fallback for safety
+                    coupleName={`${formData.groom_name} & ${formData.bride_name}`}
+                />
+            )}
+
             {step <= totalSteps && (
+                // ... existing progress bar
                 <div className="mb-12 relative z-10">
                     <div className="flex justify-between items-center mb-3">
                         <span className="text-sm font-medium tracking-widest uppercase text-[var(--muted-foreground)]">Qadam {step} / {totalSteps}</span>
@@ -263,6 +279,7 @@ export default function WeddingWizard() {
 
             <form onSubmit={handleSubmit} className="relative z-10">
                 <AnimatePresence mode="wait">
+                    {/* ... Steps 1, 2, 3 remain exactly the same ... */}
                     {step === 1 && (
                         <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-8">
                             <div className="space-y-2 text-center md:text-left">
@@ -342,6 +359,7 @@ export default function WeddingWizard() {
 
                     {step === 4 && result && (
                         <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-6 space-y-8">
+                            {/* Theme switcher (same as before) */}
                             <div className="flex justify-center gap-4 mb-4">
                                 <button type="button" onClick={() => setTheme('royal-gold')} className={cn("w-8 h-8 rounded-full border-2", theme === 'royal-gold' ? "border-[#D4AF37] bg-[#D4AF37]" : "border-gray-200 bg-[#D4AF37]/20")} title="Royal" />
                                 <button type="button" onClick={() => setTheme('modern-minimalist')} className={cn("w-8 h-8 rounded-full border-2", theme === 'modern-minimalist' ? "border-gray-800 bg-gray-800" : "border-gray-200 bg-gray-200")} title="Minimalist" />
@@ -350,8 +368,13 @@ export default function WeddingWizard() {
 
                             {renderInvitationCard()}
 
-                            <div className="flex justify-center gap-4 mt-8">
+                            <div className="flex justify-center gap-4 mt-8 flex-col md:flex-row">
+                                <Button type="button" onClick={() => setIsShareModalOpen(true)} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg animate-pulse">
+                                    🚀 Ulashish (Link / QR)
+                                </Button>
                                 <Button type="button" onClick={() => window.print()} variant="outline">PDF Saqlash</Button>
+                            </div>
+                            <div className="flex justify-center mt-2">
                                 <Button type="button" variant="ghost" onClick={() => setStep(1)}>Yangi Taklifnoma</Button>
                             </div>
                         </motion.div>

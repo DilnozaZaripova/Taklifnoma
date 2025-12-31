@@ -51,6 +51,7 @@ model Wedding {
   invitations  Invitation[]
   gifts        Gift[]
   media        Media[]
+  guestActions GuestAction[]
   tables       Table[]
   activityLogs ActivityLog[]
   createdAt    DateTime      @default(now())
@@ -84,13 +85,15 @@ model Invitation {
 }
 
 model Gift {
-  id        String   @id @default(cuid())
-  weddingId String
-  wedding   Wedding  @relation(fields: [weddingId], references: [id])
-  guestName String
-  amount    Float
-  message   String?
-  createdAt DateTime @default(now())
+  id            String   @id @default(cuid())
+  weddingId     String
+  wedding       Wedding  @relation(fields: [weddingId], references: [id])
+  guestName     String
+  amount        Float
+  message       String?
+  paymentMethod String   @default("MANUAL") // MANUAL, CLICK, PAYME
+  status        String   @default("PENDING") // PENDING, COMPLETED
+  createdAt     DateTime @default(now())
 }
 
 model Media {
@@ -98,9 +101,21 @@ model Media {
   weddingId       String
   wedding         Wedding  @relation(fields: [weddingId], references: [id])
   fileUrl         String
-  type            String
+  type            String   // IMAGE, VIDEO
   uploadedByGuest Boolean  @default(true)
+  guestName       String?
+  caption         String?
   createdAt       DateTime @default(now())
+}
+
+model GuestAction {
+  id        String   @id @default(cuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id])
+  actionType String   // VISIT, SHARE, CLICK_MAP
+  metadata  Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
 }
 
 model Notification {
