@@ -40,6 +40,8 @@ export const metadata: Metadata = {
   description: "AI-powered digital wedding invitations, to'yana tracking, and guest media gallery. The premium platform for Uzbekistan weddings.",
 };
 
+import { Providers } from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -50,8 +52,10 @@ export default function RootLayout({
       <body
         className={`${playfair.variable} ${inter.variable} ${greatVibes.variable} ${cinzel.variable} ${bodoni.variable} ${lato.variable} antialiased`}
       >
-        <Header />
-        {children}
+        <Providers>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
