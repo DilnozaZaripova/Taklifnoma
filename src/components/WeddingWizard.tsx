@@ -45,7 +45,7 @@ export default function WeddingWizard() {
                 return;
             }
 
-            const response = await fetch('/api/ai/generate-invitation', {
+            const response = await fetch('/api/invitation/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -60,6 +60,18 @@ export default function WeddingWizard() {
                 return;
             }
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                // Try parsing JSON error if possible
+                try {
+                    const errorJson = JSON.parse(errorText);
+                    throw new Error(errorJson.message || 'Server xatosi');
+                } catch (e) {
+                    // If unexpected token < (HTML), this will catch it and throw the text
+                    throw new Error(errorText || 'Server xatosi');
+                }
+            }
+
             const data = await response.json();
 
             if (data.success) {
@@ -70,7 +82,9 @@ export default function WeddingWizard() {
             }
         } catch (err: any) {
             console.error(err);
-            setError("Texnik xatolik: " + (err.message || "Server xatosi"));
+            // Better error message for HTML responses
+            const msg = err.message.includes('<!DOCTYPE') ? 'Serverda ichki xatolik (HTML response)' : err.message;
+            setError("Xatolik: " + msg);
         } finally {
             setLoading(false);
         }
