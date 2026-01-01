@@ -19,26 +19,13 @@ export default function LoginPage() {
     const [error, setError] = useState('');
     const router = useRouter();
 
-    // Auto-exchange session for custom token
+    const { status } = useSession();
+
     useEffect(() => {
-        if (session?.user?.email) {
-            const exchangeSession = async () => {
-                try {
-                    const res = await fetch('/api/auth/exchange');
-                    const data = await res.json();
-                    if (data.success) {
-                        localStorage.setItem('accessToken', data.accessToken);
-                        localStorage.setItem('refreshToken', data.refreshToken);
-                        localStorage.setItem('user', JSON.stringify(data.user));
-                        router.push('/dashboard');
-                    }
-                } catch (e) {
-                    console.error('Session exchange failed', e);
-                }
-            };
-            exchangeSession();
+        if (status === "authenticated") {
+            router.replace("/dashboard");
         }
-    }, [session, router]);
+    }, [status, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { motion } from 'framer-motion';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
@@ -9,15 +10,18 @@ import Button from '@/components/ui/Button';
 import { User, Lock, Bell, Shield, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export default function SettingsPage() {
+    const { data: session, status } = useSession();
+    const router = useRouter();
+
     const [activeTab, setActiveTab] = useState<'profile' | 'password' | 'notifications'>('profile');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
-    const router = useRouter();
 
     const [profileData, setProfileData] = useState({
         fullName: '',
         email: '',
-        phone: ''
+        phone: '',
+        provider: ''
     });
 
     const [passwordData, setPasswordData] = useState({
@@ -27,20 +31,17 @@ export default function SettingsPage() {
     });
 
     useEffect(() => {
-        fetchProfile();
-    }, []);
+        if (status === 'unauthenticated') {
+            router.push('/login');
+        } else if (status === 'authenticated') {
+            fetchProfile();
+        }
+    }, [status, router]);
 
     const fetchProfile = async () => {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
-
         try {
-            const response = await fetch('/api/user/profile', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
+            // Cookies are sent automatically
+            const response = await fetch('/api/user/profile');
 
             if (response.ok) {
                 const data = await response.json();
@@ -48,11 +49,10 @@ export default function SettingsPage() {
                     setProfileData({
                         fullName: data.data.fullName || '',
                         email: data.data.email || '',
-                        phone: data.data.phone || ''
+                        phone: data.data.phone || '',
+                        provider: data.data.provider || 'credentials'
                     });
                 }
-            } else if (response.status === 401) {
-                router.push('/login');
             }
         } catch (error) {
             console.error('Failed to fetch profile:', error);
@@ -64,20 +64,16 @@ export default function SettingsPage() {
         setLoading(true);
         setMessage(null);
 
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
-
         try {
             const response = await fetch('/api/user/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(profileData)
+                body: JSON.stringify({
+                    fullName: profileData.fullName,
+                    phone: profileData.phone
+                })
             });
 
             const data = await response.json();
@@ -111,18 +107,11 @@ export default function SettingsPage() {
             return;
         }
 
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            router.push('/login');
-            return;
-        }
-
         try {
             const response = await fetch('/api/user/password', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     currentPassword: passwordData.currentPassword,
@@ -145,9 +134,14 @@ export default function SettingsPage() {
         }
     };
 
+    if (status === 'loading') {
+        return <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">Yuklanmoqda...</div>;
+    }
+
     const tabs = [
         { id: 'profile', label: 'Profil', icon: User },
-        { id: 'password', label: 'Parol', icon: Lock },
+        // Only show Password tab if provider is NOT google
+        ...(profileData.provider !== 'google' ? [{ id: 'password', label: 'Parol', icon: Lock }] : []),
         { id: 'notifications', label: 'Bildirishnomalar', icon: Bell }
     ];
 
@@ -175,8 +169,8 @@ export default function SettingsPage() {
                                     setMessage(null);
                                 }}
                                 className={`flex items-center gap-2 px-6 py-3 border-b-2 transition-colors ${activeTab === tab.id
-                                        ? 'border-[var(--primary)] text-[var(--primary)]'
-                                        : 'border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
+                                    ? 'border-[var(--primary)] text-[var(--primary)]'
+                                    : 'border-transparent text-[var(--muted-foreground)] hover:text-[var(--foreground)]'
                                     }`}
                             >
                                 <tab.icon size={18} />
@@ -191,8 +185,8 @@ export default function SettingsPage() {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             className={`p-4 rounded-xl flex items-center gap-3 ${message.type === 'success'
-                                    ? 'bg-green-50 border border-green-200 text-green-700'
-                                    : 'bg-red-50 border border-red-200 text-red-700'
+                                ? 'bg-green-50 border border-green-200 text-green-700'
+                                : 'bg-red-50 border border-red-200 text-red-700'
                                 }`}
                         >
                             {message.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
@@ -209,6 +203,15 @@ export default function SettingsPage() {
                                     <p className="text-sm text-[var(--muted-foreground)]">
                                         Profilingizdagi asosiy ma'lumotlarni yangilang
                                     </p>
+
+                                    {profileData.provider === 'google' && (
+                                        <div className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg text-sm border border-blue-100">
+                                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
+                                            </svg>
+                                            Bu hisob Google orqali ulangan
+                                        </div>
+                                    )}
                                 </div>
 
                                 <Input
@@ -218,13 +221,22 @@ export default function SettingsPage() {
                                     placeholder="Ismingiz va familiyangiz"
                                 />
 
-                                <Input
-                                    label="Email"
-                                    type="email"
-                                    value={profileData.email}
-                                    onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                                    placeholder="email@example.com"
-                                />
+                                <div className="space-y-1">
+                                    <Input
+                                        label="Email"
+                                        type="email"
+                                        value={profileData.email}
+                                        disabled={true} // Always disabled as per request/security preference
+                                        className="bg-gray-100 cursor-not-allowed text-gray-500"
+                                        onChange={(e) => { }}
+                                        placeholder="email@example.com"
+                                    />
+                                    {profileData.provider === 'credentials' && (
+                                        <p className="text-xs text-[var(--muted-foreground)] ml-1">
+                                            Emailni o'zgartirish uchun qo'llab-quvvatlash xizmatiga yozing
+                                        </p>
+                                    )}
+                                </div>
 
                                 <Input
                                     label="Telefon"

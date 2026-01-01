@@ -1,14 +1,29 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
+    adapter: PrismaAdapter(prisma),
+    session: {
+        strategy: "jwt",
+    },
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || "",
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+            profile(profile) {
+                return {
+                    id: profile.sub,
+                    name: profile.name,
+                    email: profile.email,
+                    image: profile.picture,
+                    emailVerified: true, // Google accounts are verified
+                    role: "USER", // Default role
+                };
+            },
         }),
         CredentialsProvider({
             name: "Credentials",
@@ -53,85 +68,43 @@ export const authOptions: NextAuthOptions = {
         })
     ],
     callbacks: {
-        async signIn({ user, account, profile }) {
+        async signIn({ user, account }) {
             if (account?.provider === "google") {
-                if (!user.email) return false;
-
-                const existingUser = await prisma.user.findUnique({
-                    where: { email: user.email },
-                });
-
-                if (!existingUser) {
-                    // Create new user via Google
-                    await prisma.user.create({
-                        data: {
-                            email: user.email,
-                            fullName: user.name || "Foydalanuvchi",
-                            emailVerified: true, // Auto-verify Google users
-                            provider: "google",
-                            role: "USER"
-                        }
-                    });
-                } else {
-                    // Link account logic if needed, or just allow.
-                    // If user exists with credentials, we allow Google login to merge?
-                    // Safer to just update provider or ensure emailVerified is true if logging in via Google
-                    if (!existingUser.emailVerified) {
-                        await prisma.user.update({
-                            where: { id: existingUser.id },
-                            data: { emailVerified: true, provider: 'google' } // Upgrade trust
-                        });
-                    }
-                }
+                return true; // PrismaAdapter handles creation/linking
             }
             return true;
         },
         async jwt({ token, user, account }) {
-            // Initial sign in
-            if (account && user) {
-                // For Google Auth, 'user' id is the Google ID, not our DB ID.
-                // We must fetch users from DB to get the real UUID.
-                const dbUser = await prisma.user.findUnique({
-                    where: { email: user.email as string }
-                });
-
-                if (dbUser) {
-                    token.id = dbUser.id;
-                    token.role = dbUser.role;
-                    token.emailVerified = dbUser.emailVerified;
-                }
-            } else if (token.email) {
-                // Subsequent API calls - verify user still exists/get fresh role
-                // Optional: Only fetch if critical, but for 'settings' syncing it helps.
-                // For performance we can skip, but to be robust let's fetch if fields missing
-                if (!token.id || !token.role) {
-                    const dbUser = await prisma.user.findUnique({
-                        where: { email: token.email }
-                    });
-                    if (dbUser) {
-                        token.id = dbUser.id;
-                        token.role = dbUser.role;
-                        token.emailVerified = dbUser.emailVerified;
-                    }
-                }
+            // Initial sign in or subsequent visits
+            if (user) {
+                token.id = user.id;
+                token.role = (user as any).role;
             }
+            // For adapter users (Google), user.id is the DB ID because Adapter fetches it.
             return token;
         },
         async session({ session, token }) {
-            if (session.user) {
+            if (session.user && token) {
                 (session.user as any).id = token.id;
                 (session.user as any).role = token.role;
-                (session.user as any).emailVerified = token.emailVerified;
             }
             return session;
         }
     },
     pages: {
         signIn: '/login',
-        error: '/login', // Redirect to login page on error
+        error: '/login',
     },
-    session: {
-        strategy: "jwt",
+    cookies: {
+        sessionToken: {
+            name: "next-auth.session-token",
+            options: {
+                httpOnly: true,
+                sameSite: "lax",
+                path: "/",
+                secure: true,
+            },
+        },
     },
     secret: process.env.NEXTAUTH_SECRET,
 };
