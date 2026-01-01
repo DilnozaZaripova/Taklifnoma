@@ -1,31 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyAccessToken } from '@/lib/jwt';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
     try {
-        // 1. Auth Check
-        const authHeader = request.headers.get('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        // 1. Auth Check - Using NextAuth Session
+        const session = await getServerSession(authOptions);
+
+        if (!session || !session.user) {
             return NextResponse.json(
-                { success: false, message: 'Unauthorized: No token provided' },
+                { success: false, message: 'Unauthorized: Kirish tavsiya etiladi' },
                 { status: 401 }
             );
         }
 
-        const token = authHeader.split(' ')[1];
-        const decoded = verifyAccessToken(token);
+        const userId = (session.user as any).id;
 
-        if (!decoded || typeof decoded !== 'object' || !decoded.userId) {
+        if (!userId) {
             return NextResponse.json(
-                { success: false, message: 'Unauthorized: Invalid token' },
-                { status: 401 }
+                { success: false, message: 'Xatolik: Foydalanuvchi topilmadi' },
+                { status: 400 }
             );
         }
-
-        const userId = decoded.userId;
 
         // 2. Body Validation
         const body = await request.json();
