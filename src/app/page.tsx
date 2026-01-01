@@ -126,9 +126,9 @@ export default function Home() {
             © 2025 Taklifnoma. Muhabbat bilan yaratildi.
           </p>
           <div className="flex justify-center gap-6 text-[var(--muted-foreground)] text-sm uppercase tracking-widest">
-            <a href="#" className="hover:text-[var(--primary)] transition-colors">Biz haqimizda</a>
-            <a href="#" className="hover:text-[var(--primary)] transition-colors">Yordam</a>
-            <a href="#" className="hover:text-[var(--primary)] transition-colors">Maxfiylik</a>
+            <Link href="/about" className="hover:text-[var(--primary)] transition-colors">Biz haqimizda</Link>
+            <Link href="/help" className="hover:text-[var(--primary)] transition-colors">Yordam</Link>
+            <Link href="/privacy" className="hover:text-[var(--primary)] transition-colors">Maxfiylik</Link>
           </div>
         </div>
 

@@ -4,54 +4,68 @@ import { HelpCircle, Mail, Phone } from 'lucide-react';
 export default function HelpPage() {
     return (
         <main className="min-h-screen bg-[var(--background)] py-12 px-4">
-            <div className="container-centered max-w-4xl">
+            <div className="container-centered max-w-3xl">
                 <div className="text-center mb-12">
                     <HelpCircle size={48} className="mx-auto text-[var(--primary)] mb-4" />
-                    <h1 className="text-4xl md:text-5xl font-serif text-[var(--foreground)] mb-4">Yordam Markazi</h1>
-                    <p className="text-[var(--muted-foreground)]">Savollaringiz bormi? Biz sizga yordam berishga tayyormiz.</p>
+                    <h1 className="text-4xl md:text-5xl font-serif text-[var(--foreground)] mb-4">Yordam</h1>
+                    <p className="text-[var(--muted-foreground)] font-light text-lg">
+                        Savollaringiz bormi? Biz sizga yordam berishga tayyormiz.
+                    </p>
                 </div>
 
-                <div className="grid gap-6">
-                    <Card className="p-8">
-                        <h2 className="text-2xl font-serif mb-4 flex items-center gap-2">
-                            Tez-tez so'raladigan savollar
-                        </h2>
-                        <div className="space-y-4 divide-y divide-[var(--border)]">
-                            <div className="pt-4 first:pt-0">
-                                <h3 className="font-medium text-lg">Taklifnoma yaratish pullikmi?</h3>
-                                <p className="text-[var(--muted-foreground)]">Platformamizda asosiy taklifnoma yaratish bepul. Premium funksiyalar (masalan, to'yana yig'ish, video yuklash) uchun qo'shimcha to'lov bo'lishi mumkin.</p>
-                            </div>
-                            <div className="pt-4">
-                                <h3 className="font-medium text-lg">Taklifnomani tahrirlasa bo'ladimi?</h3>
-                                <p className="text-[var(--muted-foreground)]">Ha, yaratilgan taklifnomani istalgan vaqtda "Boshqaruv Paneli" orqali tahrirlashingiz mumkin.</p>
-                            </div>
-                            <div className="pt-4">
-                                <h3 className="font-medium text-lg">Mehmonlar qanday kirishadi?</h3>
-                                <p className="text-[var(--muted-foreground)]">Mehmonlar siz yuborgan havola yoki QR kod orqali maxsus sahifaga kirishadi. Ularga hech qanday ilova yuklab olish shart emas.</p>
-                            </div>
+                <div className="grid gap-8">
+                    <Card className="p-8 md:p-10">
+                        <p className="text-lg mb-6 leading-relaxed">
+                            Agar platformadan foydalanish jarayonida savollaringiz yoki qiyinchiliklar bo‘lsa, ushbu bo‘lim siz uchun.
+                        </p>
+
+                        <div className="bg-[var(--secondary)]/20 p-6 rounded-xl mb-8">
+                            <h2 className="font-serif text-xl mb-4">Bu yerda siz:</h2>
+                            <ul className="space-y-3 list-disc list-inside text-[var(--foreground)]/80">
+                                <li>taklifnoma yaratish bo‘yicha ko‘rsatmalar</li>
+                                <li>QR koddan foydalanish</li>
+                                <li>taklifnomani ulashish</li>
+                                <li>mehmonlar bilan ishlash</li>
+                            </ul>
+                            <p className="mt-4 pt-4 border-t border-[var(--border)] opacity-80">
+                                haqida ma’lumot olishingiz mumkin.
+                            </p>
                         </div>
+
+                        <p className="text-center font-medium">
+                            Agar savolingizga javob topa olmasangiz, biz bilan bog‘lanishingiz mumkin.
+                        </p>
                     </Card>
 
-                    <Card className="p-8 bg-[var(--primary)] text-white border-none">
-                        <h2 className="text-2xl font-serif mb-4">Biz bilan bog'lanish</h2>
-                        <p className="mb-6 opacity-90">Agar savolingizga javob topa olmasangiz, bizning qo'llab-quvvatlash xizmatimizga murojaat qiling.</p>
+                    <Card className="p-8 bg-[var(--primary)] text-white border-none relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h2 className="text-2xl font-serif mb-6 text-center">Biz bilan bog'lanish</h2>
 
-                        <div className="flex flex-col md:flex-row gap-6">
-                            <a href="mailto:support@taklifnoma.uz" className="flex items-center gap-3 bg-white/10 p-4 rounded-xl hover:bg-white/20 transition">
-                                <Mail size={24} />
-                                <div>
-                                    <p className="text-xs opacity-70">Email</p>
-                                    <p className="font-medium">support@taklifnoma.uz</p>
+                            <div className="flex flex-col md:flex-row gap-4 items-center justify-center">
+                                <a href="mailto:support@inviter.uz" className="flex flex-1 w-full md:w-auto items-center gap-4 bg-white/10 p-4 rounded-xl hover:bg-white/20 transition backdrop-blur-sm group">
+                                    <div className="p-3 bg-white/10 rounded-full group-hover:scale-110 transition-transform">
+                                        <Mail size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs opacity-70 uppercase tracking-wider">Email</p>
+                                        <p className="font-medium text-lg">support@inviter.uz</p>
+                                    </div>
+                                </a>
+
+                                <div className="flex flex-1 w-full md:w-auto items-center gap-4 bg-white/10 p-4 rounded-xl hover:bg-white/20 transition backdrop-blur-sm">
+                                    <div className="p-3 bg-white/10 rounded-full">
+                                        <HelpCircle size={24} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs opacity-70 uppercase tracking-wider">Javob vaqti</p>
+                                        <p className="font-medium text-lg">24 soat ichida</p>
+                                    </div>
                                 </div>
-                            </a>
-                            <a href="tel:+998901234567" className="flex items-center gap-3 bg-white/10 p-4 rounded-xl hover:bg-white/20 transition">
-                                <Phone size={24} />
-                                <div>
-                                    <p className="text-xs opacity-70">Telefon</p>
-                                    <p className="font-medium">+998 90 123-45-67</p>
-                                </div>
-                            </a>
+                            </div>
                         </div>
+
+                        {/* Decorative background element */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
                     </Card>
                 </div>
             </div>

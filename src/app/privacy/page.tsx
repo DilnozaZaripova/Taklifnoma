@@ -4,29 +4,36 @@ export default function PrivacyPage() {
     return (
         <main className="min-h-screen bg-[var(--background)] py-12 px-4">
             <div className="container-centered max-w-3xl">
-                <h1 className="text-3xl font-serif text-[var(--foreground)] mb-8">Maxfiylik Siyosati</h1>
-                <Card className="p-8 prose prose-slate max-w-none">
-                    <p className="text-sm text-gray-500 mb-6">Oxirgi yangilanish: {new Date().toLocaleDateString()}</p>
+                <div className="text-center mb-12">
+                    <h1 className="text-3xl md:text-4xl font-serif text-[var(--foreground)] mb-6">Maxfiylik siyosati</h1>
+                    <div className="w-24 h-1 bg-[var(--primary)] mx-auto rounded-full" />
+                </div>
 
-                    <h3>1. Umumiy qoidalar</h3>
-                    <p>Ushbu Maxfiylik Siyosati sizning shaxsiy ma'lumotlaringiz qanday to'planishi, ishlatilishi va himoya qilinishini tushuntiradi. Taklifnoma.uz xizmatidan foydalanish orqali siz ushbu shartlarga rozilik bildirasiz.</p>
+                <Card className="p-8 md:p-12 space-y-8">
+                    <p className="text-lg leading-relaxed">
+                        Biz foydalanuvchilarimizning shaxsiy ma’lumotlarini hurmat qilamiz va ularning xavfsizligini birinchi o‘ringa qo‘yamiz.
+                    </p>
 
-                    <h3>2. Ma'lumotlarni to'plash</h3>
-                    <p>Biz quyidagi ma'lumotlarni to'plashimiz mumkin:</p>
-                    <ul>
-                        <li>Ism, familiya va bog'lanish ma'lumotlari (email, telefon).</li>
-                        <li>To'y haqidagi ma'lumotlar (sanasi, manzili, kuyov va kelin ismlari).</li>
-                        <li>Yuklangan media fayllar (rasm va videolar).</li>
-                    </ul>
+                    <div className="bg-gray-50 border border-gray-100 p-6 rounded-xl">
+                        <h3 className="font-serif text-xl mb-4 text-[var(--foreground)]">Platformada kiritilgan barcha ma’lumotlar:</h3>
+                        <ul className="space-y-3 list-disc list-inside text-[var(--muted-foreground)]">
+                            <li>uchinchi shaxslarga berilmaydi</li>
+                            <li>faqat xizmat ko‘rsatish maqsadida ishlatiladi</li>
+                            <li>xavfsiz serverlarda saqlanadi</li>
+                        </ul>
+                    </div>
 
-                    <h3>3. Ma'lumotlardan foydalanish</h3>
-                    <p>Sizning ma'lumotlaringiz faqat xizmat ko'rsatish sifatini oshirish, taklifnomalarni shakllantirish va siz bilan bog'lanish uchun ishlatiladi. Biz ma'lumotlaringizni uchinchi shaxslarga sotmaymiz.</p>
+                    <p className="font-medium">
+                        Email, telefon raqam va boshqa shaxsiy ma’lumotlar maxfiy hisoblanadi.
+                    </p>
 
-                    <h3>4. Xavfsizlik</h3>
-                    <p>Biz ma'lumotlaringizni himoya qilish uchun zamonaviy shifrlash va xavfsizlik choralarini ko'ramiz. Biroq, internet orqali ma'lumot uzatish 100% xavfsiz ekanligiga kafolat bera olmaymiz.</p>
+                    <div className="p-4 bg-[var(--primary)]/5 border border-[var(--primary)]/20 rounded-lg text-center text-[var(--foreground)]">
+                        Foydalanuvchi roziligisiz hech qanday ma’lumot tarqatilmaydi.
+                    </div>
 
-                    <h3>5. O'zgartirishlar</h3>
-                    <p>Ushbu siyosat vaqti-vaqti bilan yangilanishi mumkin. O'zgarishlar haqida saytda e'lon qilinadi.</p>
+                    <p className="text-center mt-12 text-sm text-[var(--muted-foreground)] pt-6 border-t border-[var(--border)]">
+                        Taklifnoma platformasidan foydalanish orqali siz ushbu maxfiylik siyosatiga rozilik bildirasiz.
+                    </p>
                 </Card>
             </div>
         </main>
