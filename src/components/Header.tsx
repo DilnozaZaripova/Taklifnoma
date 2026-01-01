@@ -109,6 +109,16 @@ export default function Header() {
                                                         <LayoutDashboard size={18} className="text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition-colors" />
                                                         <span className="text-sm font-medium">Dashboard</span>
                                                     </Link>
+                                                    {(session?.user as any)?.role === 'ADMIN' && (
+                                                        <Link
+                                                            href="/admin"
+                                                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-blue-600 transition-colors group"
+                                                            onClick={() => setShowDropdown(false)}
+                                                        >
+                                                            <Settings size={18} className="group-hover:text-blue-700 transition-colors" />
+                                                            <span className="text-sm font-medium">Admin Panel</span>
+                                                        </Link>
+                                                    )}
                                                     <Link
                                                         href="/settings"
                                                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[var(--muted)] text-[var(--foreground)] transition-colors group"
@@ -187,6 +197,16 @@ export default function Header() {
                                         <LayoutDashboard size={20} className="text-[var(--primary)]" />
                                         <span className="font-medium">Dashboard</span>
                                     </Link>
+                                    {(session?.user as any)?.role === 'ADMIN' && (
+                                        <Link
+                                            href="/admin"
+                                            className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50 transition-colors text-blue-600"
+                                            onClick={() => setShowMobileMenu(false)}
+                                        >
+                                            <Settings size={20} className="text-blue-500" />
+                                            <span className="font-medium">Admin Panel</span>
+                                        </Link>
+                                    )}
                                     <Link
                                         href="/settings"
                                         className="flex items-center gap-3 px-4 py-3 hover:bg-[var(--muted)] transition-colors text-[var(--foreground)]"
