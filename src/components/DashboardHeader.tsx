@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button'; // Premium Button
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 
 export default function DashboardHeader() {
     const [userName, setUserName] = useState('Azizbek');
@@ -44,14 +44,24 @@ export default function DashboardHeader() {
                 </p>
             </div>
 
-            <Button
-                onClick={handleLogout}
-                variant="ghost"
-                size="sm"
-                className="text-red-500 hover:text-red-600 hover:bg-red-50"
-            >
-                <LogOut className="mr-2" size={18} /> Tizimdan Chiqish
-            </Button>
+            <div className="flex items-center gap-3">
+                <Button
+                    onClick={() => router.push('/settings')}
+                    variant="outline"
+                    size="sm"
+                    className="text-[var(--foreground)] border-[var(--border)] hover:bg-[var(--secondary)]/20"
+                >
+                    <Settings className="mr-2" size={18} /> Sozlamalar
+                </Button>
+                <Button
+                    onClick={handleLogout}
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                >
+                    <LogOut className="mr-2" size={18} /> Chiqish
+                </Button>
+            </div>
         </header>
     );
 }

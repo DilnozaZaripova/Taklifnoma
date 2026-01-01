@@ -87,14 +87,34 @@ export const authOptions: NextAuthOptions = {
             return true;
         },
         async jwt({ token, user, account }) {
-            if (user) {
-                token.id = user.id;
-                token.role = (user as any).role;
-                token.emailVerified = (user as any).emailVerified;
+            // Initial sign in
+            if (account && user) {
+                // For Google Auth, 'user' id is the Google ID, not our DB ID.
+                // We must fetch users from DB to get the real UUID.
+                const dbUser = await prisma.user.findUnique({
+                    where: { email: user.email as string }
+                });
+
+                if (dbUser) {
+                    token.id = dbUser.id;
+                    token.role = dbUser.role;
+                    token.emailVerified = dbUser.emailVerified;
+                }
+            } else if (token.email) {
+                // Subsequent API calls - verify user still exists/get fresh role
+                // Optional: Only fetch if critical, but for 'settings' syncing it helps.
+                // For performance we can skip, but to be robust let's fetch if fields missing
+                if (!token.id || !token.role) {
+                    const dbUser = await prisma.user.findUnique({
+                        where: { email: token.email }
+                    });
+                    if (dbUser) {
+                        token.id = dbUser.id;
+                        token.role = dbUser.role;
+                        token.emailVerified = dbUser.emailVerified;
+                    }
+                }
             }
-            // If we need to fetch fresh data from DB on every JWT interaction:
-            // const freshUser = await prisma.user.findUnique({ where: { email: token.email! } });
-            // if (freshUser) { ... }
             return token;
         },
         async session({ session, token }) {
