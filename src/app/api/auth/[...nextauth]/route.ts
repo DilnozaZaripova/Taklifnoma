@@ -1,22 +1,18 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
-
-export const authOptions: NextAuthOptions = {
+const handler = NextAuth({
     adapter: PrismaAdapter(prisma),
-
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            allowDangerousEmailAccountLinking: true, // MUHIM: Google va email accountlarni bog'lash
+            allowDangerousEmailAccountLinking: true,
         }),
-
         CredentialsProvider({
             name: "credentials",
             credentials: {
@@ -54,48 +50,19 @@ export const authOptions: NextAuthOptions = {
             }
         })
     ],
-
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
-        strategy: "jwt", // MUHIM: JWT strategiyasi
-        maxAge: 30 * 24 * 60 * 60, // 30 kun
+        strategy: "jwt", // Credentials requires JWT, we use adapter for persistence where possible
+        maxAge: 30 * 24 * 60 * 60
     },
-
     callbacks: {
-        async jwt({ token, user, account, trigger }) {
-            if (user) {
-                token.id = user.id;
-                token.email = user.email;
-            }
-            return token;
-        },
-
         async session({ session, token }) {
-            if (token && session.user) {
-                session.user.id = token.id as string;
-                session.user.email = token.email as string;
+            if (session.user && token.sub) {
+                (session.user as any).id = token.sub;
             }
             return session;
-        },
-
-        async signIn({ user, account, profile }) {
-            // Google OAuth uchun email verification
-            if (account?.provider === "google") {
-                return true;
-            }
-            // Credentials uchun
-            return true;
         }
-    },
+    }
+});
 
-    pages: {
-        signIn: "/login",
-        error: "/login",
-        signOut: "/",
-    },
-
-    secret: process.env.NEXTAUTH_SECRET,
-    debug: process.env.NODE_ENV === "development",
-};
-
-const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
