@@ -18,7 +18,7 @@ export default function SettingsPage() {
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
     const [profileData, setProfileData] = useState({
-        fullName: '',
+        name: '',
         email: '',
         phone: '',
         provider: ''
@@ -47,7 +47,7 @@ export default function SettingsPage() {
                 const data = await response.json();
                 if (data.success) {
                     setProfileData({
-                        fullName: data.data.fullName || '',
+                        name: data.data.name || '',
                         email: data.data.email || '',
                         phone: data.data.phone || '',
                         provider: data.data.provider || 'credentials'
@@ -71,7 +71,7 @@ export default function SettingsPage() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    fullName: profileData.fullName,
+                    name: profileData.name,
                     phone: profileData.phone
                 })
             });
@@ -216,8 +216,8 @@ export default function SettingsPage() {
 
                                 <Input
                                     label="To'liq ism"
-                                    value={profileData.fullName}
-                                    onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
+                                    value={profileData.name}
+                                    onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
                                     placeholder="Ismingiz va familiyangiz"
                                 />
 

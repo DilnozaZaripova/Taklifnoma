@@ -14,8 +14,8 @@ export default function DashboardHeader() {
         if (userStr) {
             try {
                 const user = JSON.parse(userStr);
-                if (user && user.fullName) {
-                    setUserName(user.fullName);
+                if (user && user.name) {
+                    setUserName(user.name);
                 }
             } catch (e) {
                 console.error("Error parsing user from localStorage:", e);

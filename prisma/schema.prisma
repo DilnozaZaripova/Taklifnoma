@@ -10,7 +10,7 @@ datasource db {
 // NextAuth uchun to'liq modellar
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  name          String?   // NextAuth standard field
   email         String?   @unique
   emailVerified DateTime?
   image         String?

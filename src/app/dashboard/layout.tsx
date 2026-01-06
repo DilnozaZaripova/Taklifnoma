@@ -15,8 +15,8 @@ export default function DashboardLayout({
         if (userStr) {
             try {
                 const user = JSON.parse(userStr);
-                if (user && user.fullName) {
-                    setUserInitial(user.fullName.charAt(0).toUpperCase());
+                if (user && user.name) {
+                    setUserInitial(user.name.charAt(0).toUpperCase());
                 }
             } catch (e) { }
         }

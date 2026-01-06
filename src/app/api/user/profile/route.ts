@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         const user = await prisma.user.findUnique({
             where: { email: session.user.email },
             select: {
-                fullName: true,
+                name: true,
                 email: true,
                 phone: true,
                 provider: true,
@@ -48,16 +48,16 @@ export async function PUT(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { fullName, phone } = body;
+        const { name, phone } = body;
 
-        if (!fullName) {
+        if (!name) {
             return NextResponse.json({ success: false, message: 'Ism kiritilishi shart' }, { status: 400 });
         }
 
         await prisma.user.update({
             where: { email: session.user.email },
             data: {
-                fullName,
+                name,
                 phone
             }
         });

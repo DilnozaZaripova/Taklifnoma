@@ -7,21 +7,29 @@ import bcrypt from "bcryptjs";
 
 const handler = NextAuth({
     adapter: PrismaAdapter(prisma),
+
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-            allowDangerousEmailAccountLinking: true,
+            authorization: {
+                params: {
+                    prompt: "consent",
+                    access_type: "offline",
+                    response_type: "code"
+                }
+            }
         }),
+
         CredentialsProvider({
-            name: "credentials",
+            name: "Credentials",
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
-                    throw new Error("Email va parol talab qilinadi");
+                    throw new Error("Email yoki parol kiritilmadi");
                 }
 
                 const user = await prisma.user.findUnique({
@@ -29,44 +37,48 @@ const handler = NextAuth({
                 });
 
                 if (!user || !user.password) {
-                    throw new Error("Foydalanuvchi topilmadi");
+                    throw new Error("Email topilmadi");
                 }
 
-                const isPasswordValid = await bcrypt.compare(
+                const isValid = await bcrypt.compare(
                     credentials.password,
                     user.password
                 );
 
-                if (!isPasswordValid) {
-                    throw new Error("Noto'g'ri parol");
+                if (!isValid) {
+                    throw new Error("Parol noto'g'ri");
                 }
 
                 return {
                     id: user.id,
-                    email: user.email,
                     name: user.name,
-                    image: user.image,
+                    email: user.email,
+                    image: user.image
                 };
             }
         })
     ],
-    secret: process.env.NEXTAUTH_SECRET,
+
     session: {
-        strategy: "jwt", // Credentials requires JWT, we use adapter for persistence where possible
-        maxAge: 30 * 24 * 60 * 60
+        strategy: "jwt"
     },
+
+    pages: {
+        signIn: "/login"
+    },
+
     callbacks: {
-        async session({ session, token }) {
-            if (session.user && token.sub) {
-                (session.user as any).id = token.sub;
-            }
-            return session;
-        },
         async jwt({ token, user }) {
             if (user) {
-                token.sub = user.id;
+                token.id = user.id;
             }
             return token;
+        },
+        async session({ session, token }) {
+            if (session.user && token?.id) {
+                session.user.id = token.id as string;
+            }
+            return session;
         }
     }
 });
