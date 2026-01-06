@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Inter, Great_Vibes, Cinzel, Bodoni_Moda, Lato } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/Header";
+import Navbar from "@/components/Navbar";
+import { Providers } from "./providers";
 
 const playfair = Playfair_Display({
   variable: "--font-serif",
@@ -36,11 +37,9 @@ const lato = Lato({
 });
 
 export const metadata: Metadata = {
-  title: "Taklifnoma – Baxtli Kuningizni Raqamlashtiring",
-  description: "AI-powered digital wedding invitations, to'yana tracking, and guest media gallery. The premium platform for Uzbekistan weddings.",
+  title: "Inviter.uz - Raqamli To'y Taklifnomalari",
+  description: "To'y va marosimlar uchun zamonaviy raqamli taklifnomalar",
 };
-
-import { Providers } from "@/components/Providers";
 
 export default function RootLayout({
   children,
@@ -48,12 +47,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="uz">
       <body
         className={`${playfair.variable} ${inter.variable} ${greatVibes.variable} ${cinzel.variable} ${bodoni.variable} ${lato.variable} antialiased`}
       >
         <Providers>
-          <Header />
+          <Navbar />
           {children}
         </Providers>
       </body>
