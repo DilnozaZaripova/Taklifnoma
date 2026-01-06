@@ -61,6 +61,12 @@ const handler = NextAuth({
                 (session.user as any).id = token.sub;
             }
             return session;
+        },
+        async jwt({ token, user }) {
+            if (user) {
+                token.sub = user.id;
+            }
+            return token;
         }
     }
 });
