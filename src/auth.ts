@@ -7,10 +7,8 @@ import { prisma } from "@/lib/prisma";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-
-  session: {
-    strategy: "jwt",
-  },
+  session: { strategy: "jwt" },
+  debug: true,
 
   providers: [
     GoogleProvider({
@@ -28,37 +26,40 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        email: { type: "email" },
+        password: { type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        try {
+          if (!credentials?.email || !credentials.password) {
+            return null;
+          }
 
-        const email = credentials.email as string;
-        const password = credentials.password as string;
+          const email = credentials.email as string;
+          const password = credentials.password as string;
 
-        const user = await prisma.user.findUnique({
-          where: { email },
-        });
+          const user = await prisma.user.findUnique({
+            where: { email },
+          });
 
-        if (!user || !user.password) {
-          throw new Error("Email topilmadi");
+          if (!user || !user.password) {
+            return null;
+          }
+
+          const ok = await bcrypt.compare(password, user.password);
+          if (!ok) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email || "",
+            name: user.name || "",
+          };
+        } catch (err) {
+          console.error("AUTH ERROR:", err);
+          return null;
         }
-
-        const isValid = await bcrypt.compare(
-          password,
-          user.password
-        );
-
-        if (!isValid) {
-          throw new Error("Parol noto‘g‘ri");
-        }
-
-        return {
-          id: user.id,
-          email: user.email || "",
-          name: user.name || "",
-        };
       },
     }),
   ],
