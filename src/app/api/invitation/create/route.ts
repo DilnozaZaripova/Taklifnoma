@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { auth } from "@/auth";
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
     try {
         // 1. Auth Check - Using NextAuth Session
-        const session = await getServerSession(authOptions);
+        const session = await auth();
 
         if (!session || !session.user) {
             return NextResponse.json(
