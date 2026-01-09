@@ -1,57 +1,62 @@
 import NextAuth from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
-  trustHost: true, // ✅ CRITICAL: Required for Render + custom domain
-
-  adapter: PrismaAdapter(prisma),
+  trustHost: true,
   session: { strategy: "jwt" },
   debug: true,
 
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          prompt: "consent",
-          access_type: "offline",
-          response_type: "code",
-        },
-      },
-    }),
-
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { type: "email" },
-        password: { type: "password" },
+        email: { type: "email", label: "Email" },
+        code: { type: "text", label: "Verification Code" },
       },
       async authorize(credentials) {
         try {
-          if (!credentials?.email || !credentials.password) {
+          if (!credentials?.email || !credentials?.code) {
             return null;
           }
 
           const email = credentials.email as string;
-          const password = credentials.password as string;
+          const code = credentials.code as string;
 
+          // Find user by email
           const user = await prisma.user.findUnique({
             where: { email },
           });
 
-          if (!user || !user.password) {
+          if (!user) {
             return null;
           }
 
-          const ok = await bcrypt.compare(password, user.password);
-          if (!ok) {
+          // Check if verification code exists and hasn't expired
+          if (!user.verificationCode || !user.verificationExpiry) {
             return null;
           }
+
+          // Check expiry
+          if (new Date() > user.verificationExpiry) {
+            return null;
+          }
+
+          // Verify code (hashed comparison)
+          const isValid = await bcrypt.compare(code, user.verificationCode);
+          if (!isValid) {
+            return null;
+          }
+
+          // Clear verification code after successful login
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              verificationCode: null,
+              verificationExpiry: null,
+            },
+          });
 
           return {
             id: user.id,
