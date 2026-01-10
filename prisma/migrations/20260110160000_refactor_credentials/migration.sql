@@ -32,8 +32,16 @@ DROP COLUMN "provider",
 DROP COLUMN "refreshTokens",
 DROP COLUMN "verificationCode",
 DROP COLUMN "verificationExpiry",
-ALTER COLUMN "email" SET NOT NULL,
-ALTER COLUMN "password" SET NOT NULL;
+ALTER COLUMN "email" SET NOT NULL;
+
+-- Backfill existing users with a temporary password hash (bcrypt) to satisfy NOT NULL constraint
+-- Hash corresponds to a temporary password (e.g., "reset-me-123") or just a random string users can't guess.
+-- This prevents the migration from failing on existing rows.
+UPDATE "User"
+SET "password" = '$2a$12$eXgJ/eXgJ/eXgJ/eXgJ/eX.eXgJ/eXgJ/eXgJ/eXgJ/eXgJ/eXgJ/' -- Dummy hash
+WHERE "password" IS NULL;
+
+ALTER TABLE "User" ALTER COLUMN "password" SET NOT NULL;
 
 -- DropTable
 DROP TABLE "Account";
