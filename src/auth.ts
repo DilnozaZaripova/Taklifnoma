@@ -1,7 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
-import { verifyPassword } from "@/lib/password";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: {
@@ -11,27 +10,48 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Credentials({
       name: "credentials",
       credentials: {
-        email: { type: "email" },
-        password: { type: "password" },
+        email: { type: "text" },
+        code: { type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials.password) {
+        if (!credentials?.email || !credentials.code) {
           return null;
         }
 
         const email = credentials.email as string;
-        const password = credentials.password as string;
+        const code = credentials.code as string;
 
-        const user = await prisma.user.findUnique({
+        // 1. Verify code in EmailVerification table
+        const verification = await prisma.emailVerification.findFirst({
+          where: {
+            email,
+            code,
+            expiresAt: { gt: new Date() }, // Check if not expired
+          },
+        });
+
+        if (!verification) {
+          return null;
+        }
+
+        // 2. Find or Create User
+        let user = await prisma.user.findUnique({
           where: { email },
         });
 
-        if (!user || !user.email || !user.password) return null;
+        if (!user) {
+          user = await prisma.user.create({
+            data: {
+              email,
+              onboardingCompleted: false, // Flag for new users
+            },
+          });
+        }
 
-        // Verify password
-        const isValid = await verifyPassword(password, user.password);
-
-        if (!isValid) return null;
+        // 3. Delete used verification code
+        await prisma.emailVerification.delete({
+          where: { id: verification.id },
+        });
 
         return {
           id: user.id,
