@@ -58,6 +58,9 @@ export default function RegisterPage() {
             if (result?.ok) {
                 router.push("/dashboard");
                 router.refresh();
+            } else {
+                // If auto-login fails, redirect to login page
+                router.push("/login?message=successfully_registered");
             }
         } catch (err: any) {
             setError(err.message);

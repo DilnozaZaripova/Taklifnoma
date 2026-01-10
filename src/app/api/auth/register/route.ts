@@ -1,29 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { hashPassword } from "@/lib/password";
 
-const prisma = new PrismaClient();
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
     try {
         const { name, email, password } = await req.json();
 
-        if (!name || !email || !password) {
+        if (!email || !password) {
             return NextResponse.json(
-                { message: "Barcha maydonlarni to'ldiring" },
+                { message: "Email va parol talab qilinadi" },
                 { status: 400 }
             );
         }
 
         if (password.length < 6) {
             return NextResponse.json(
-                { message: "Parol kamida 6 ta belgidan iborat bo'lishi kerak" },
+                { message: "Parol kamida 6 belgidan iborat bo'lishi kerak" },
                 { status: 400 }
             );
         }
 
+        // Check if user exists
         const existingUser = await prisma.user.findUnique({
-            where: { email }
+            where: { email },
         });
 
         if (existingUser) {
@@ -33,36 +32,27 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const hashedPassword = await bcrypt.hash(password, 12);
+        // Hash password
+        const hashedPassword = await hashPassword(password);
 
-        const user = await prisma.user.create({
+        // Create user
+        await prisma.user.create({
             data: {
                 name,
                 email,
                 password: hashedPassword,
             },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-            }
         });
 
         return NextResponse.json(
-            {
-                message: "Muvaffaqiyatli ro'yxatdan o'tdingiz",
-                user
-            },
+            { message: "Muvaffaqiyatli ro'yxatdan o'tdingiz" },
             { status: 201 }
         );
-
     } catch (error) {
-        console.error("Register error:", error);
+        console.error("Register Error:", error);
         return NextResponse.json(
-            { message: "Server xatosi" },
+            { message: "Serverda xatolik yuz berdi" },
             { status: 500 }
         );
-    } finally {
-        await prisma.$disconnect();
     }
 }
