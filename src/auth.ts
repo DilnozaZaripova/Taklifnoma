@@ -1,19 +1,15 @@
 import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
-  trustHost: true,
+export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
-  debug: true,
-
   providers: [
-    CredentialsProvider({
-      name: "credentials",
+    Credentials({
+      name: "Email OTP",
       credentials: {
-        email: { type: "email", label: "Email" },
-        code: { type: "text", label: "Verification Code" },
+        email: { label: "Email", type: "email" },
+        code: { label: "Code", type: "text" },
       },
       async authorize(credentials) {
         try {
@@ -24,38 +20,32 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
           const email = credentials.email as string;
           const code = credentials.code as string;
 
-          // Find user by email
-          const user = await prisma.user.findUnique({
-            where: { email },
+          // Find valid verification record
+          const record = await prisma.emailVerification.findFirst({
+            where: {
+              email,
+              code,
+              expiresAt: { gt: new Date() },
+            },
           });
 
-          if (!user) {
+          if (!record) {
             return null;
           }
 
-          // Check if verification code exists and hasn't expired
-          if (!user.verificationCode || !user.verificationExpiry) {
-            return null;
-          }
-
-          // Check expiry
-          if (new Date() > user.verificationExpiry) {
-            return null;
-          }
-
-          // Verify code (hashed comparison)
-          const isValid = await bcrypt.compare(code, user.verificationCode);
-          if (!isValid) {
-            return null;
-          }
-
-          // Clear verification code after successful login
-          await prisma.user.update({
-            where: { id: user.id },
-            data: {
-              verificationCode: null,
-              verificationExpiry: null,
+          // Find or create user
+          const user = await prisma.user.upsert({
+            where: { email },
+            update: {},
+            create: {
+              email,
+              emailVerified: new Date(),
             },
+          });
+
+          // Delete used verification code
+          await prisma.emailVerification.deleteMany({
+            where: { email },
           });
 
           return {
@@ -70,8 +60,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       },
     }),
   ],
-
   pages: {
     signIn: "/login",
   },
+  trustHost: true,
+  debug: process.env.NODE_ENV === "development",
 });

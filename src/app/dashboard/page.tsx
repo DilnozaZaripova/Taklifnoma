@@ -1,123 +1,85 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma";
 import DashboardHeader from '@/components/DashboardHeader';
 import WeddingWizard from '@/components/WeddingWizard';
 import Onboarding from '@/components/Onboarding';
 import Card from '@/components/ui/Card';
-import Button from '@/components/ui/Button';
 import { Calendar, Users, Gift, Sparkles } from 'lucide-react';
 
-export default function DashboardPage() {
-    const [stats, setStats] = useState({
-        weddingCount: 0,
-        acceptedRSVPs: 0,
-        totalGiftAmount: 0,
-        totalInvitations: 0
-    });
-    const [loading, setLoading] = useState(true);
-    const [showOnboarding, setShowOnboarding] = useState(false);
+export default async function DashboardPage() {
+    const session = await auth();
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const token = localStorage.getItem('accessToken');
-                if (!token) {
-                    window.location.href = '/login';
-                    return;
-                }
+    if (!session?.user?.id) {
+        redirect("/login");
+    }
 
-                const response = await fetch('/api/user/stats', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+    const userId = session.user.id;
 
-                if (response.status === 401) {
-                    window.location.href = '/login';
-                    return;
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    setStats(data.data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch stats:', error);
-            } finally {
-                setLoading(false);
+    // Fetch stats directly from DB
+    const [
+        weddingCount,
+        invitationCount,
+        acceptedRSVPs,
+        totalGifts
+    ] = await Promise.all([
+        prisma.wedding.count({
+            where: { userId }
+        }),
+        prisma.invitation.count({
+            where: { userId }
+        }),
+        prisma.rSVP.aggregate({
+            _sum: { attendeeCount: true },
+            where: {
+                wedding: { userId },
+                status: "ACCEPTED"
             }
-        };
+        }),
+        prisma.gift.aggregate({
+            _sum: { amount: true },
+            where: {
+                wedding: { userId }
+            }
+        })
+    ]);
 
-        fetchStats();
-        checkOnboarding();
-    }, []);
-
-    const checkOnboarding = async () => {
-        const completed = localStorage.getItem('onboardingCompleted');
-        if (!completed) {
-            setShowOnboarding(true);
-        }
-    };
-
-    const handleOnboardingComplete = () => {
-        localStorage.setItem('onboardingCompleted', 'true');
-        setShowOnboarding(false);
-    };
-
-    const handleOnboardingSkip = () => {
-        localStorage.setItem('onboardingCompleted', 'true');
-        setShowOnboarding(false);
+    const stats = {
+        weddingCount,
+        totalInvitations: invitationCount,
+        acceptedRSVPs: acceptedRSVPs._sum.attendeeCount || 0,
+        totalGiftAmount: totalGifts._sum.amount || 0 // Assuming 'amount' is float/int
     };
 
     return (
         <main className="min-h-screen bg-[var(--background)] px-4 sm:px-6 lg:px-8 py-12">
-            {showOnboarding && (
-                <Onboarding
-                    onComplete={handleOnboardingComplete}
-                    onSkip={handleOnboardingSkip}
-                />
-            )}
-
             <div className="max-w-7xl mx-auto space-y-12">
-
                 <DashboardHeader />
 
                 {/* Command Center - Stats Grid */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="grid md:grid-cols-3 gap-6"
-                >
+                <div className="grid md:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <StatCard
                         icon={<Calendar className="text-[var(--primary)]" size={28} />}
                         label="To'ylaringiz"
-                        value={loading ? '...' : stats.weddingCount.toString()}
+                        value={stats.weddingCount.toString()}
                         subValue="Yaratilgan"
                     />
                     <StatCard
                         icon={<Users className="text-[var(--primary)]" size={28} />}
                         label="Qabul qilingan"
-                        value={loading ? '...' : stats.acceptedRSVPs.toString()}
+                        value={stats.acceptedRSVPs.toString()}
                         subValue={`${stats.totalInvitations} taklif yuborilgan`}
                     />
                     <StatCard
                         icon={<Gift className="text-[var(--primary)]" size={28} />}
                         label="To'plangan Mablag'"
-                        value={loading ? '...' : `${(stats.totalGiftAmount / 1000).toFixed(0)}K`}
+                        value={`${(Number(stats.totalGiftAmount) / 1000).toFixed(0)}K`}
                         subValue="UZS"
                     />
-                </motion.div>
+                </div>
 
                 {/* Main Action Area: Wedding Wizard */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="relative"
-                >
+                <div className="relative animate-in fade-in slide-in-from-bottom-6 duration-700 delay-100">
                     <div className="mb-8 flex items-end justify-between">
                         <div>
                             <h2 className="text-3xl font-serif text-[var(--foreground)] flex items-center gap-3">
@@ -130,17 +92,11 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    {/* The Wizard Component */}
                     <WeddingWizard />
-                </motion.div>
+                </div>
 
-                {/* NEW WIDGETS SECTION */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 pb-12"
-                >
+                {/* WIDGETS SECTION - Static for now or fetch more data if needed */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4 pb-12 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
                     {/* WIDGET A: MOLIYA (FINANCE) */}
                     <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-xl border border-white/50">
                         <div className="flex items-center gap-3 mb-6">
@@ -153,28 +109,10 @@ export default function DashboardPage() {
                             </div>
                         </div>
 
-                        {/* Summary */}
                         <div className="bg-green-50 rounded-2xl p-6 text-center mb-6 border border-green-100">
                             <p className="text-sm text-green-600 uppercase tracking-widest mb-1">Jami Yig'ildi</p>
-                            <p className="text-4xl font-bold text-green-700">12,450,000</p>
+                            <p className="text-4xl font-bold text-green-700">{stats.totalGiftAmount.toLocaleString()}</p>
                             <p className="text-xs text-green-600/70 mt-1">so'm</p>
-                        </div>
-
-                        {/* List */}
-                        <div className="space-y-3">
-                            {[1, 2, 3].map((_, i) => (
-                                <div key={i} className="flex justify-between items-center p-3 hover:bg-white rounded-xl transition border border-transparent hover:border-gray-100">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">M</div>
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-800">Mehmon Ismi</p>
-                                            <p className="text-[10px] text-gray-400">12 daqiqa oldin</p>
-                                        </div>
-                                    </div>
-                                    <p className="text-sm font-bold text-green-600">+500,000</p>
-                                </div>
-                            ))}
-                            <button className="w-full py-2 text-xs text-center text-gray-400 hover:text-[#D4AF37] transition mt-2">Barchasini ko'rish</button>
                         </div>
                     </div>
 
@@ -189,22 +127,11 @@ export default function DashboardPage() {
                                 <p className="text-xs text-gray-500">Mehmonlar yuklagan rasmlar</p>
                             </div>
                         </div>
-
-                        <div className="grid grid-cols-3 gap-2">
-                            {[1, 2, 3, 4, 5, 6].map((_, i) => (
-                                <div key={i} className="aspect-square bg-gray-200 rounded-lg relative overflow-hidden group cursor-pointer">
-                                    {/* Placeholder Image */}
-                                    <div className="absolute inset-0 bg-gray-100 animate-pulse" />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                                        <span className="text-white text-xs">Yuklash</span>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="flex items-center justify-center h-32 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                            <p className="text-sm text-gray-400">Hozircha rasmlar yo'q</p>
                         </div>
-                        <Button className="w-full mt-6 bg-gray-900 text-white hover:bg-gray-800">Barchasini Yuklab Olish (Zip)</Button>
                     </div>
-
-                </motion.div>
+                </div>
             </div>
         </main>
     );
@@ -213,7 +140,7 @@ export default function DashboardPage() {
 interface StatCardProps {
     icon: React.ReactNode;
     label: string;
-    value: number | string;
+    value: string;
     subValue?: string;
 }
 
@@ -224,7 +151,6 @@ function StatCard({ icon, label, value, subValue }: StatCardProps) {
                 <div className="p-3 rounded-2xl bg-[var(--primary)]/10">
                     {icon}
                 </div>
-                {/* Optional: Trend indicator could go here */}
             </div>
             <div>
                 <p className="text-sm font-medium text-[var(--muted-foreground)] uppercase tracking-wider mb-1">

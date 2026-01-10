@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -22,7 +23,8 @@ export default function LoginForm() {
         setMessage("");
 
         try {
-            const response = await fetch("/api/auth/request-code", {
+            // ✅ Use the new "send-code" endpoint
+            const response = await fetch("/api/auth/send-code", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),
@@ -31,7 +33,7 @@ export default function LoginForm() {
             const data = await response.json();
 
             if (response.ok) {
-                setMessage(data.message);
+                setMessage("Tasdiqlash kodi emailingizga yuborildi");
                 setStep("code");
             } else {
                 setError(data.message || "Xatolik yuz berdi");
@@ -49,19 +51,19 @@ export default function LoginForm() {
         setError("");
 
         try {
-            const response = await fetch("/api/auth/verify-code", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, code }),
+            // ✅ Use signIn("credentials") directly instead of verify-code API
+            const result = await signIn("credentials", {
+                email,
+                code,
+                redirect: false,
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                router.push(callbackUrl);
+            if (result?.error) {
+                setError("Kod noto'g'ri yoki eskirgan");
+            } else if (result?.ok) {
+                // ✅ Success -> Refresh router and push to dashboard
                 router.refresh();
-            } else {
-                setError(data.message || "Kod noto'g'ri");
+                router.push(callbackUrl);
             }
         } catch (err) {
             setError("Xatolik yuz berdi");
